@@ -6,11 +6,23 @@
     "app": {
       "projectType": "application",
       "schematics": {
+        "@schematics/angular:module": {
+          "spec": false
+        },
         "@schematics/angular:component": {
           "style": "scss",
           "spec": false,
           "inlineStyle": true,
           "inlineTemplate": false
+        },
+        "@schematics/angular:service": {
+          "spec": false
+        },
+        "@schematics/angular:directive": {
+          "spec": false
+        },
+        "@schematics/angular:pipe": {
+          "spec": false
         }
       },
       "root": "",
@@ -20,7 +32,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/app",
+            "outputPath": "out-tsc/ui",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",

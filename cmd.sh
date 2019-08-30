@@ -15,7 +15,7 @@ do
             break
         ;;
         "Run docker image")
-            command docker run -dit --name billdesk -v ${PWD}:/app -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY --device /dev/snd electron:dev
+            command docker run -dit --name billdesk -v ${PWD}:/app -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY --device /dev/snd rajez/node-electron:latest
             break
         ;;
         "Make windows build")

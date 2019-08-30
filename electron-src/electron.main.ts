@@ -1,54 +1,61 @@
-import { app, BrowserWindow, Menu, Tray, BrowserWindowConstructorOptions } from 'electron';
+import { app, BrowserWindow, Menu, Tray, BrowserWindowConstructorOptions, ipcMain, IpcMessageEvent } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 
-let win: BrowserWindow = null;
+export var mainWindow : BrowserWindow= null;
 
-const args = process.argv;
-let devServer = args.indexOf('--serve') >= 0;
-
-let ngDistDir = `${path.join(__dirname, '/app')}`;
+let argv = process.argv;
+let devServer = argv.indexOf('--serve') >= 0;
+let ngDistDir = `${path.join(__dirname, '..', '/ui')}`;
 
 
 function createWindow() {
-    win = new BrowserWindow({
+    mainWindow  = new BrowserWindow({
         width: 800,
         height: 600,
-        icon: `file://${path.join(__dirname, ngDistDir, '/assets/images/logo.png')}`,
-        skipTaskbar: false,
+        show: false,
+        icon: `file://${path.join(ngDistDir, '/assets/images/logo.png')}`,
+        skipTaskbar: true,
         webPreferences: {
-            sandbox: false
-            // nodeIntegration: true
+            nodeIntegration: true
         }
     });
 
+    // Importing web communication events
+    require('./events');
+
+    mainWindow.maximize();
+    mainWindow.show();
+
+
     if (devServer) {
+        console.log('Loading dev server')
 
         // get dynamic version from localhost:4200
-        require('electron-reload')(__dirname, {
-            electron: require(`${__dirname}/node_modules/electron`)
-        });
-        win.loadURL('http://localhost:4200');
+        // require('electron-reload')(__dirname, {
+        //     electron: require(`${__dirname}/../node_modules/electron`)
+        // });
+        mainWindow.loadURL('http://localhost:4200');
 
         // The following is optional and will open the DevTools:
-        win.webContents.openDevTools();
+        mainWindow.webContents.openDevTools();
 
     } else {
-        console.log(path.join(ngDistDir, 'index.html'));
-        win.loadURL(
+        
+        mainWindow.loadURL(
             url.format({
                 pathname: path.join(ngDistDir, 'index.html'),
                 protocol: "file:",
-                slashes: true,
-                //icon: path.join(__dirname, 'assets/icons/favicon.png')
+                slashes: true
             })
         );
+            
+        mainWindow.webContents.openDevTools();
     }
 
-    win.webContents.openDevTools();
 
-    win.on('closed', () => {
-        win = null;
+    mainWindow.on('closed', () => {
+        mainWindow  = null;
     });
 
 }
@@ -76,7 +83,7 @@ try {
 
     // initialize the app's main window
     app.on("activate", () => {
-        if (win === null) {
+        if (mainWindow  === null) {
             createWindow();
         }
     });
@@ -85,3 +92,5 @@ try {
     // Catch Error
     // throw e;
 }
+
+

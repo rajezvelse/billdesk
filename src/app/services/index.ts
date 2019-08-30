@@ -1,1 +1,1 @@
-export { DatabaseService } from './database.service'
+export { ElectronIpcService } from './electron-ipc.service'

@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  databasePath: ''
+  databasePath: 'file:///home/rajez/Works/projects/billdesk/db.billdesk'
 };
 
 /*

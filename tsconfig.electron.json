@@ -1,0 +1,17 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./out-tsc/electron",
+        "types": [
+            "node"
+        ],
+        "sourceMap": false,
+        "module": "commonjs",
+        "target": "es5"
+    },
+    "files": [],
+    "include": [
+        "electron-src/**/*.ts"
+    ],
+    "exclude": []
+}
