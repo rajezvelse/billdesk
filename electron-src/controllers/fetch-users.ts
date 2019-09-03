@@ -1,21 +1,21 @@
 import { ipcMain, BrowserWindow } from 'electron';
-import { mainWindow } from '../electron.main';
-import { getConnection } from '../db.connection';
+import { Settings } from '../settings';
 import { User } from '../entity/User';
 
 ipcMain.on('fetchUsers', (params?: any) => {
-    getConnection().then(async connection => {
+
+    Settings.getConnection().then(async connection => {
 
         const users = await connection.manager.find(User);
 
-        if(users.length == 0){
+        if (users.length == 0) {
             const user = new User();
             user.firstName = "Timber";
             user.lastName = "Saw";
             user.age = 25;
             await connection.manager.save(user);
-            
-            
+
+
             const user2 = new User();
             user2.firstName = "Mousik";
             user2.lastName = "Saw";
@@ -24,8 +24,8 @@ ipcMain.on('fetchUsers', (params?: any) => {
         }
 
         console.log('Response', users)
-        mainWindow.webContents.send('fetchUsersResponse', users)
-        
+        Settings.sendWebContent('fetchUsersResponse', users);
+
     }).catch(Err => console.log(Err))
 
 });

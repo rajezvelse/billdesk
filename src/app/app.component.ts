@@ -10,12 +10,11 @@ import { ElectronIpcService } from '@app/services';
 export class AppComponent {
   users: Object[] = [];
 
-  constructor(private electronIpc: ElectronIpcService, public zone: NgZone) {
-    // this.electronIpc.send('ngLoaded');
-  }
+  constructor(private electronIpc: ElectronIpcService, public zone: NgZone) { }
 
   ngOnInit() {
-    this.electronIpc.send('fetchUsers')
+
+    setInterval(() => this.electronIpc.send('fetchUsers'), 3000);
 
     this.electronIpc.on('fetchUsersResponse', (event: IpcRendererEvent, ...args) => {
       this.zone.run(() => this.users = args[0]);
