@@ -2,6 +2,7 @@
    "name": "billdesk",
    "version": "0.0.0",
    "description": "Automobile spares billing app",
+   "auther": "rajezvelse",
    "main": "out-tsc/electron/electron.main.js",
    "scripts": {
       "ng": "ng",
@@ -18,8 +19,8 @@
       "start:electron": "electron-forge start -- --no-sandbox",
       "start:electron-build": "npm run build && npm run start:electron",
       "tsc:electron": "tsc -p tsconfig.electron.json",
-      "make:linux": "npm run build && electron-forge --targets @electron-forge/maker-deb",
-      "make:win": "npm run build && electron-forge --targets @electron-forge/maker-squirrel"
+      "make:linux": "npm run build && electron-forge make --targets @electron-forge/maker-deb",
+      "make:win": "npm run build && electron-forge make --targets @electron-forge/maker-squirrel"
    },
    "keywords": [],
    "config": {
@@ -28,9 +29,7 @@
          "makers": [
             {
                "name": "@electron-forge/maker-squirrel",
-               "config": {
-                  "name": "test_app"
-               }
+               "config": {}
             },
             {
                "name": "@electron-forge/maker-zip",
@@ -61,13 +60,12 @@
       "@angular/router": "8.2.3",
       "electron-squirrel-startup": "1.0.0",
       "fs": "0.0.1-security",
-      "reflect-metadata": "^0.1.10",
+      "reflect-metadata": "0.1.10",
       "rxjs": "6.4.0",
       "sqlite3": "4.1.0",
       "tslib": "1.10.0",
       "typeorm": "0.2.18",
-      "zone.js": "0.9.1",
-      "mysql": "^2.14.1"
+      "zone.js": "0.9.1"
    },
    "devDependencies": {
       "@angular-devkit/build-angular": "0.803.0",
@@ -79,14 +77,14 @@
       "@electron-forge/maker-rpm": "6.0.0-beta.44",
       "@electron-forge/maker-squirrel": "6.0.0-beta.44",
       "@electron-forge/maker-zip": "6.0.0-beta.44",
-      "@types/electron": "^1.6.10",
+      "@types/electron": "1.6.10",
       "@types/es6-shim": "0.31.39",
       "@types/jasmine": "3.3.16",
       "@types/jasminewd2": "2.0.6",
-      "@types/node": "^8.0.29",
+      "@types/node": "8.0.29",
       "codelyzer": "5.1.0",
       "electron": "6.0.4",
-      "electron-reload": "^1.5.0",
+      "electron-reload": "1.5.0",
       "jasmine-core": "3.4.0",
       "jasmine-spec-reporter": "4.2.1",
       "karma": "4.1.0",
@@ -94,7 +92,7 @@
       "karma-coverage-istanbul-reporter": "2.0.6",
       "karma-jasmine": "2.0.1",
       "karma-jasmine-html-reporter": "1.4.2",
-      "npm-run-all": "^4.1.5",
+      "npm-run-all": "4.1.5",
       "protractor": "5.4.2",
       "ts-node": "3.3.0",
       "tslint": "5.15.0",

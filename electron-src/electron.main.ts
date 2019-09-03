@@ -1,8 +1,7 @@
 import { app, BrowserWindow, Menu, Tray, BrowserWindowConstructorOptions, ipcMain, IpcMessageEvent } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
-
-export var mainWindow : BrowserWindow= null;
+import { Settings } from './settings';
 
 let argv = process.argv;
 let devServer = argv.indexOf('--serve') >= 0;
@@ -10,19 +9,20 @@ let ngDistDir = `${path.join(__dirname, '..', '/ui')}`;
 
 
 function createWindow() {
-    mainWindow  = new BrowserWindow({
+    let mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
         show: false,
-        icon: `file://${path.join(ngDistDir, '/assets/images/logo.png')}`,
+        icon: `${path.join(ngDistDir, '/assets/images/logo.png')}`,
         skipTaskbar: true,
         webPreferences: {
             nodeIntegration: true
         }
     });
+    Settings.setWindow(mainWindow);
 
     // Importing web communication events
-    require('./events');
+    require('./controllers');
 
     mainWindow.maximize();
     mainWindow.show();
@@ -41,7 +41,7 @@ function createWindow() {
         mainWindow.webContents.openDevTools();
 
     } else {
-        
+
         mainWindow.loadURL(
             url.format({
                 pathname: path.join(ngDistDir, 'index.html'),
@@ -49,13 +49,13 @@ function createWindow() {
                 slashes: true
             })
         );
-            
+
         mainWindow.webContents.openDevTools();
     }
 
 
     mainWindow.on('closed', () => {
-        mainWindow  = null;
+        mainWindow = null;
     });
 
 }
@@ -83,7 +83,7 @@ try {
 
     // initialize the app's main window
     app.on("activate", () => {
-        if (mainWindow  === null) {
+        if (Settings.getWindow() === null) {
             createWindow();
         }
     });

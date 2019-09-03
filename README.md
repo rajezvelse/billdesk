@@ -1,27 +1,46 @@
-# App
+# Electron_Angular8+_Sqlite Starter
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.0.
+This is a simple starter kit for developing electron applications with Angular & SQLite3. It is best suitable for beginners to quick initiate the project. [Electron Forge](https://www.electronforge.io/) is used for the building the electron app. So there is difficulties in managing the native dependencies for the electron application.
 
-## Development server
+[TypeORM](https://typeorm.io/#/) is used for the database connectivity. It is such a nice tool for managing entities, fetching, writing data into the database. `IpcRenderer` from the electron is used to pass data between electron and angular.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Directories
 
-## Code scaffolding
+`src` - Angular application source code
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+`electron-src` - Electron application bootstrap configuration and entities, contollers.
 
-## Build
+`out-tsc` - Source code compilation output
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+`out` - Final application build output
 
-## Running unit tests
+## Setup
+```
+git clone https://github.com/rajezvelse/billdesk.git
+cd billdesk
+npm install
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Dev
 
-## Running end-to-end tests
+To run the development app start the Angular server in a terminal `npm run start:ng` and then start the electron application in another terminal `npm run start:electron`. The chnage detection is handled by the Angular development server.
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+## Dev test build
 
-## Further help
+`npm run start:electron-build`
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+## Linux deb build
+
+`npm run make:linux`
+
+## Windows build
+
+`npm run make:win`
+
+## References
+[Electron](https://electronjs.org/)
+
+[Angular](https://angular.io/)
+
+[TypeORM](https://typeorm.io/#/)
+
