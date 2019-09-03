@@ -16,7 +16,7 @@ This is a simple starter kit for developing electron applications with Angular &
 
 ## Setup
 ```
-git clone https://github.com/rajezvelse/billdesk.git
+git clone --branch electron-ng8-sqlite3  https://github.com/rajezvelse/billdesk.git
 cd billdesk
 npm install
 ```
