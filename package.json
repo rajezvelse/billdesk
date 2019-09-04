@@ -25,7 +25,9 @@
    "keywords": [],
    "config": {
       "forge": {
-         "packagerConfig": {},
+         "packagerConfig": {
+            "icon": "src/assets/images/icon.png"
+         },
          "makers": [
             {
                "name": "@electron-forge/maker-squirrel",
@@ -96,6 +98,6 @@
       "protractor": "5.4.2",
       "ts-node": "3.3.0",
       "tslint": "5.15.0",
-      "typescript": "3.3.3333"
+      "typescript": "3.5.3"
    }
 }
