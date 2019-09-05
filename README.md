@@ -37,6 +37,15 @@ To run the development app start the Angular server in a terminal `npm run start
 
 `npm run make:win`
 
+#### Dependencies:
+
+python2.7
+
+git
+
+npm install --global --production windows-build-tools
+
+
 ## References
 [Electron](https://electronjs.org/)
 
