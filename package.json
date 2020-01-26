@@ -1,25 +1,48 @@
 {
   "name": "billdesk",
   "version": "0.1.0",
+  "description": "Automobile spares billing app",
+  "author": "rajezvelse",
+  "license": "MIT",
+  "main": "dist/electron/electron.main.js",
+  "homepage": "./",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.0",
     "@testing-library/user-event": "^7.2.1",
     "@types/jest": "^24.9.1",
-    "@types/node": "^12.12.25",
     "@types/react": "^16.9.19",
     "@types/react-dom": "^16.9.5",
+    "electron-squirrel-startup": "^1.0.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-scripts": "3.3.0",
+    "reflect-metadata": "^0.1.13",
+    "sqlite3": "^4.1.1",
+    "typeorm": "^0.2.22",
     "typescript": "^3.7.5"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "typeorm": "typeorm",
+    "electron": "electron",
+    "electron-forge": "electron-forge",
+    "ts-node": "ts-node",
+    "build": "npm run react:build && npm run electron:tsc",
+    "react:start": "react-scripts start",
+    "react:build": "react-scripts build",
+    "react:test": "react-scripts test",
+    "react:eject": "react-scripts eject",
+    "postreact:build": "node scripts/set-ui-build.js",
+    "electron:tsc": "tsc -p tsconfig.electron.json",
+    "electron:start": "npm run electron:tsc && electron-forge start -- --no-sandbox",
+    "electron:package": "electron-forge package",
+    "electron:make": "electron-forge make",
+    "electron:publish": "electron-forge publish",
+    "electron:lint": "tslint -c tslint.json -p tsconfig.electron.json",
+    "make:deb": "npm run build && electron-forge make --targets @electron-forge/maker-deb",
+    "make:win": "npm run build && electron-forge make --targets @electron-forge/maker-squirrel",
+    "make:rpm": "npm run build && electron-forge make --targets @electron-forge/maker-rpm"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -35,5 +58,48 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.47",
+    "@electron-forge/maker-deb": "^6.0.0-beta.47",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.47",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.47",
+    "@electron-forge/maker-zip": "^6.0.0-beta.47",
+    "@types/fs-extra": "^8.0.1",
+    "@types/node": "^12.12.25",
+    "electron": "7.1.10",
+    "electron-reload": "^1.5.0",
+    "fs-extra": "^8.1.0",
+    "ts-node": "^8.6.2",
+    "tslint": "^5.20.1"
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {
+        "icon": "src/assets/images/icon.png"
+      },
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "billdesk"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
   }
 }
