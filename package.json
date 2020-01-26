@@ -28,6 +28,7 @@
     "electron": "electron",
     "electron-forge": "electron-forge",
     "ts-node": "ts-node",
+    "start": "npm run build && electron-forge start -- --no-sandbox",
     "build": "npm run react:build && npm run electron:tsc",
     "react:start": "react-scripts start",
     "react:build": "react-scripts build",
