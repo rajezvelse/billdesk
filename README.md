@@ -31,7 +31,11 @@ To run the development app start the React dev server in a terminal `npm run rea
 
 ## Linux deb build
 
-`npm run make:deb` or `npm run make:rpm`
+`npm run make:deb`
+
+## Linux rpm build
+
+`npm run make:rpm`
 
 ## Windows build
 

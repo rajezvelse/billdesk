@@ -5,7 +5,7 @@ import { Settings } from './settings';
 
 let argv = process.argv;
 let devServer = argv.indexOf('--serve') >= 0;
-let uiDistDir = `${path.join(__dirname, '..', '/ui')}`;
+let ngDistDir = `${path.join(__dirname, '..', '/ui')}`;
 
 
 function createWindow() {
@@ -13,7 +13,7 @@ function createWindow() {
         width: 800,
         height: 600,
         show: false,
-        icon: `${path.join(uiDistDir, '/assets/images/logo.png')}`,
+        icon: `${path.join(ngDistDir, '/assets/images/logo.png')}`,
         skipTaskbar: true,
         webPreferences: {
             nodeIntegration: true
@@ -44,7 +44,7 @@ function createWindow() {
 
         mainWindow.loadURL(
             url.format({
-                pathname: path.join(uiDistDir, 'index.html'),
+                pathname: path.join(ngDistDir, 'index.html'),
                 protocol: "file:",
                 slashes: true
             })

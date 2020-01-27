@@ -17,7 +17,7 @@ export class Settings {
     static ormConfig: ConnectionOptions = {
         name: "default",
         type: "sqlite",
-        database: path.join(app.getPath('userData'), 'storage', 'db.billdesk.sqlite'),
+        database: path.join('/home/rajesh.velliangiri/.config/billdesk', 'storage', 'db.billdesk.sqlite'),
         synchronize: true,
         logging: false,
         entities: [
@@ -63,8 +63,8 @@ export class Settings {
     }
 
     // Sending data to application UI
-    static sendWebContent(event: string, data: any) {
-        Settings.mainWindow.webContents.send(event, data);
+    static sendWebContent(event: string, status: number, data: any) {
+        Settings.mainWindow.webContents.send(event, status, data);
     }
 
 
