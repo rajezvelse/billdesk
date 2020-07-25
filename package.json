@@ -1,0 +1,115 @@
+{
+  "name": "billdesk",
+  "productName": "BillDesk",
+  "version": "0.1.0",
+  "description": "Automobile spares billing application",
+  "author": "rajezvelse",
+  "license": "MIT",
+  "main": "dist/electron/electron.main.js",
+  "homepage": "./",
+  "scripts": {
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "electron:tsc": "tsc -p tsconfig.electron.json",
+    "electron:start": "yarn electron:tsc && electron . --serve",
+    "ui:start": "react-scripts start",
+    "ui:build": "react-scripts build",
+    "postui:build": "node scripts/set-ui-build.js",
+    "build": "yarn react:build && yarn electron:tsc",
+    "package-win": "yarn build && electron-builder build --win --x64",
+    "package-win32": "yarn build && electron-builder build --win --ia32",
+    "electron:load-fixtures": "ts-node -P tsconfig.electron.json electron-src/fixtures/index.ts"
+  },
+  "build": {
+    "productName": "BillDesk",
+    "appId": "org.rajezvelse.BillDesk",
+    "files": [
+      "dist/",
+      "node_modules/",
+      "index.html",
+      "package.json"
+    ],
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "win": {
+      "icon": "icon.ico",
+      "target": [
+        "nsis",
+        "msi"
+      ]
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "rpm",
+        "AppImage"
+      ],
+      "category": "Development"
+    },
+    "directories": {
+      "buildResources": "resources",
+      "output": "release"
+    },
+    "extends": null,
+    "publish": {
+      "provider": "github",
+      "owner": "rajezvelse",
+      "repo": "billdesk",
+      "private": false
+    }
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^3.0.0",
+    "@types/electron": "^1.6.10",
+    "@types/electron-builder": "^2.8.0",
+    "@types/fs-extra": "^9.0.1",
+    "@types/node": "12.0",
+    "@types/styled-components": "^5.1.1",
+    "@types/yup": "^0.29.3",
+    "electron": "^9.1.1",
+    "electron-builder": "^22.7.0",
+    "fs-extra": "^9.0.1",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7"
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "@types/react": "^16.9.43",
+    "@types/react-dom": "^16.9.8",
+    "bcrypt": "^5.0.0",
+    "formik": "^2.1.5",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-scripts": "^3.4.1",
+    "reflect-metadata": "^0.1.13",
+    "sqlite3": "^5.0.0",
+    "styled-components": "^5.1.1",
+    "typeorm": "^0.2.25",
+    "yup": "^0.29.1"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
