@@ -1,8 +1,15 @@
 import React from 'react';
+import ReactComponent from '../react-component';
+import { 
+  
+} from '../styled-components';
 
-class Dashboard extends React.Component {
+class Dashboard extends ReactComponent<any, any> {
   render() {
-    return 'Dashboard';
+    return (
+      <>
+        -
+      </>);
   }
 }
 

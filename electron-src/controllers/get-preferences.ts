@@ -5,7 +5,7 @@ import { Preferences, User } from '../entity';
 ipcMain.on('getPreferences', (event: IpcMainEvent) => {
 
     Settings.getConnection().then(async connection => {
-        console.log('In...');
+      
         const repo = connection.getRepository(Preferences);
 
         let preferences = await repo.find();

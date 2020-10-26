@@ -1,0 +1,19 @@
+{
+  "type": "sqlite",
+  "database": "../../../billdesk/storage/db.billdesk.sqlite",
+  "synchronize": true,
+  "logging": false,
+  "migrationsTableName": "migrations",
+  "entities": [
+     "electron-src/entity/**/*.ts"
+  ],
+  "migrations": [
+     "migration/**/*.ts"
+  ],
+  "subscribers": [
+     "subscriber/**/*.ts"
+  ],
+  "cli": {
+    "migrationsDir": "migration"
+}
+}

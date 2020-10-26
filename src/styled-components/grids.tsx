@@ -10,3 +10,7 @@ min-height: 80vh;
 export const GridCenter: React.FC = (props) => <GridCenterStyle container direction="row" justify="center" alignItems="center">
   {props.children}
 </GridCenterStyle>;
+
+export const GridFullHeight = styled(Grid)`
+height: 100%;
+`;

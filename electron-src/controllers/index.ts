@@ -1,3 +1,12 @@
 import './get-preferences';
 import './fetch-users';
 import './authenticate';
+import './vendors';
+import './product-categories';
+import './brands';
+import './set-preferences';
+import './products'
+import './sales'
+import './sales-payments'
+import './customers'
+import './sales-reports-metrics'

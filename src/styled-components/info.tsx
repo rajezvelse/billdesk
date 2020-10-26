@@ -49,3 +49,19 @@ export const InfoError: React.FC = (props) => <InfoBox>
 
   <Text>{props.children}</Text>
 </InfoBox>;
+
+export const ApiLoader = styled.div`
+position: absolute;
+top: 95px;
+left: 50%;
+z-index: 9999;
+width: 90px;
+margin-left: -45px;
+background-color: #f3d60c;
+padding: 2px 0px 5px;
+border-radius: 2px;
+text-align: center;
+font-weight: 500;
+box-shadow: ${props => props.theme.shadows[3]};
+
+`;

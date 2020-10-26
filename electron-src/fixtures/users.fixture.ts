@@ -15,11 +15,11 @@ export const load = async (connection: Connection) => {
         let adminRole = await roleRepository.findOne({ name: 'Admin' });
         const user = new User();
 
-        user.username = 'admin';
+        user.username = 'dinesh';
         user.role = adminRole;
-        user.setRawPassword('demo123');
-        user.firstName = 'Administrator';
-        user.email = 'admin@billdesk.com';
+        user.setRawPassword('kvmd1274');
+        user.firstName = 'Dinesh';
+        user.email = 'dinesh1992kd@gmail.com';
         user.avatar = 1;
 
         let adminUser = await userRepository.save(user);

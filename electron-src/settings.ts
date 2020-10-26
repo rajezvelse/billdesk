@@ -20,8 +20,9 @@ export class Settings {
         name: "default",
         type: "sqlite",
         database: path.join(homedir, 'billdesk', 'storage', 'db.billdesk.sqlite'),
-        synchronize: true,
         logging: false,
+        synchronize: false,
+        migrationsTableName: "migrations",
         entities: [
             path.join(__dirname, "entity/**/*")
         ],

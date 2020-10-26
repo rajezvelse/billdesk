@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { ButtonGroup, Button } from '@material-ui/core';
+import { ButtonGroup, Button, IconButton } from '@material-ui/core';
 
 export const TopNavContainer = styled.nav`
   position: relative;
@@ -49,7 +49,7 @@ export const TopNavItem = styled(Button)`
     background-repeat: no-repeat;
     white-space: nowrap;
 
-&:hover {
+&:hover, &.active {
     background: ${props => props.theme.palette.primary.main};
     background-image: unset;
     color: #fff;
@@ -72,4 +72,11 @@ export const TopNavTools = styled.ul`
   }
 `;
  
+export const TopMenuIconButton = styled(IconButton)`
+  color: #fff;
+
+  &:hover {
+    color: ${props => props.theme.palette.primary.main}
+  }
+`;
 
