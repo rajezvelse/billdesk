@@ -59,18 +59,20 @@ class SalesReportsRecords extends ReactComponent<WithSnackbarProps & {
     }
   }
 
-  componentDidMount(){
+  componentDidMount() {
     super.componentDidMount();
 
     this.fetchData(1);
   }
-  
+
   componentDidUpdate(prevProps: {
     customerId: number | null;
+    searchText?: string;
     startDate: Date;
     endDate: Date;
   }) {
     if (this.props.customerId !== prevProps.customerId
+      || this.props.searchText !== prevProps.searchText
       || this.getDateISO(this.props.startDate) !== this.getDateISO(prevProps.startDate)
       || this.getDateISO(this.props.endDate) !== this.getDateISO(prevProps.endDate)) {
 

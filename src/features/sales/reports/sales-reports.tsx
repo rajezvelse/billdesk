@@ -31,6 +31,7 @@ class SalesReports extends ReactComponent<any, {
   filterDataFetchError: any;
   filters: {
     customerId: number | null;
+    searchText: string;
     date: {
       label: string;
       startDate: Date;
@@ -51,6 +52,7 @@ class SalesReports extends ReactComponent<any, {
       filterDataFetchError: null,
       filters: {
         customerId: null,
+        searchText: '',
         date: {
           label: "This Month",
           startDate: moment().startOf('month').toDate(),
@@ -192,13 +194,12 @@ class SalesReports extends ReactComponent<any, {
 
                 <Grid item xs={12} md={6}>
                   {this.state.activeView === 'metrics' && <>
-                    
+
                   </>}
 
                   {this.state.activeView === 'records' && <>
                     {/* Customer filter */}
                     <DetailRow>
-                      <DetailLabel xs={3}>Customer</DetailLabel>
                       <DetailValue xs={9}>
                         <Autocomplete
                           options={this.state.customers}
@@ -210,7 +211,7 @@ class SalesReports extends ReactComponent<any, {
                           }}
 
                           size="small"
-                          renderInput={(params: any) => <TextField {...params} label="Select customer" type="text" variant="outlined" />}
+                          renderInput={(params: any) => <TextField {...params} label="Filter by customer" type="text" variant="outlined" />}
                           openOnFocus={true}
 
                           onChange={(event: object, value: any | any[], reason: string) => {
@@ -228,6 +229,31 @@ class SalesReports extends ReactComponent<any, {
                         />
                       </DetailValue>
                     </DetailRow>
+
+                    {/* Search */}
+                    <DetailRow>
+                      <DetailValue xs={9}>
+                        <TextField label="Search" type="text" variant="outlined" size="small"
+                          fullWidth
+                          onKeyUp={(event: any) => {
+
+                            let cls = this;
+                            let searchText: string = event.target.value;
+
+                            let fun: Function = () => {
+                              let filters = cls.state.filters;
+                              filters.searchText = searchText ? searchText : '';
+
+                              cls.setState({ filters: filters })
+
+                            };
+
+                            this.debounce(fun);
+
+                          }}
+                        />
+                      </DetailValue>
+                    </DetailRow>
                   </>}
 
                 </Grid>
@@ -241,6 +267,7 @@ class SalesReports extends ReactComponent<any, {
                   startDate={this.state.filters.date.startDate}
                   endDate={this.state.filters.date.endDate}
                   customerId={this.state.filters.customerId}
+                  searchText={this.state.filters.searchText}
                   reportState={this.state} />}
 
               {/* Metrics view */}

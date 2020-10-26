@@ -116,7 +116,8 @@ ipcMain.on('fetchSales', (event: IpcMainEvent, { pageLimit, pageNumber, orderBy,
             if (index == 0) qb.where(`s.saleNumber LIKE '%${str}%'`);
             else qb.orWhere(`s.saleNumber LIKE '%${str}%'`);
 
-            qb.orWhere(`c.name LIKE '%${str}%'`)
+            qb.orWhere(`strftime("%d/%m/%Y", s.date) LIKE '%${str}%'`)
+              .orWhere(`c.name LIKE '%${str}%'`)
               .orWhere(`s.totalCost LIKE '%${str}%'`)
               .orWhere(`s.totalDiscount LIKE '%${str}%'`)
               .orWhere(`s.totalDiscountedCost LIKE '%${str}%'`)

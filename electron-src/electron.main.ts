@@ -15,11 +15,14 @@ function createWindow() {
     width: 800,
     height: 600,
     show: false,
+    frame: true,
     webPreferences: {
       nodeIntegration: true
     }
   });
 
+  Menu.setApplicationMenu(null);
+  
   Settings.setWindow(mainWindow);
 
   // Importing web communication events
