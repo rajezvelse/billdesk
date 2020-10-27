@@ -54,9 +54,9 @@ class SalesReports extends ReactComponent<any, {
         customerId: null,
         searchText: '',
         date: {
-          label: "This Month",
-          startDate: moment().startOf('month').toDate(),
-          endDate: moment().endOf('month').toDate()
+          label: "Today",
+          startDate: moment().startOf('day').toDate(),
+          endDate: moment().endOf('day').toDate()
         }
       },
       showDateDropdown: false,

@@ -375,7 +375,7 @@ class SalesReportsMetrics extends ReactComponent<{
             {(() => {
               let data: any[] = this.state.productWiseSummary.map((r: any) => {
                 return {
-                  label: r.product.substring(0, 20) + (r.product.length > 20? '...' : ''),
+                  label: `${r.brandName} - ${r.product}`.substring(0, 30) + (r.product.length > 30? '...' : ''),
                   sales: r.totalSales
                 }
               });
@@ -397,7 +397,7 @@ class SalesReportsMetrics extends ReactComponent<{
 
                       <YAxis dataKey="label" type="category" axisLine={false}
                         tick={{ strokeWidth: 1, fontSize: 12 }} tickLine={false}
-                        tickSize={15} width={200}
+                        tickSize={15} width={300}
                         orientation="right" />
 
                       <ChartTooltip

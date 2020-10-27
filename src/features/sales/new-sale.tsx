@@ -363,7 +363,7 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
 
       });
 
-      let id = this.props.saleId || null;
+      let id = this.state.saleId || null;
 
       // Send signal
       this.context.setLoading(true);
@@ -899,6 +899,7 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
             <Drawer anchor={'right'} open={this.state.showDraftDrawer} onClose={() => { if (this.state.showDraftDrawer) this.setState({ showDraftDrawer: false }) }}>
               <SalesDrafts onClose={(saleId?: number) => {
                 this.setState({ showDraftDrawer: false }, () => {
+                  this.loadFormData();
                   this.fetchSaleData(saleId || null);
                 })
               }} />

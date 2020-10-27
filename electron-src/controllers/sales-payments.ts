@@ -46,6 +46,7 @@ ipcMain.on('addNewSalePayment', (event: IpcMainEvent, { saleId, date, mode, amou
 
       let saleRepo = connection.getRepository(Sales);
       let saleRecord = await saleRepo.findOne(saleId);
+      saleRecord.paymentReceived = total;
       saleRecord.outstandingAmount = saleRecord.totalDiscountedCost - total;
 
       await saleRepo.save(saleRecord);

@@ -61,7 +61,8 @@ ipcMain.on('fetchSalesReportsMetrics', (event: IpcMainEvent, { startDate, endDat
           .leftJoin('products', 'p', 'p.id=sp.product')
           .leftJoin('brand', 'b', 'b.id=p.brand')
           .leftJoin('product_category', 'pc', 'pc.id=p.category')
-          .where(`s.status ='SUBMITTED'`);
+          .where(`s.status ='SUBMITTED'`)
+          .andWhere('s.deletedAt IS NULL');
 
         return applyFilters(query);
       }
@@ -71,13 +72,18 @@ ipcMain.on('fetchSalesReportsMetrics', (event: IpcMainEvent, { startDate, endDat
         .select('sum(s.totalDiscountedCost) as totalBillCost, \
         sum(s.paymentReceived) as totalSalesPayment, \
         sum(s.outstandingAmount) as totaloutstandingAmount')
-        .where(`s.status ='SUBMITTED'`);
+        .where(`s.status ='SUBMITTED'`)
+        .andWhere('s.deletedAt IS NULL');
 
       let netSummary = await applyFilters(netSumQ, true).getRawMany();
       netSummary = netSummary[0];
 
       let netPaymentsQ = salesPaymentsRepo.createQueryBuilder('s')
-        .select('sum(s.amount) as totalPayment');
+        .select('sum(s.amount) as totalPayment, sr.id')
+        .leftJoin('sales', 'sr', 'sr.id=s.salesRecord')
+        .where(`sr.status ='SUBMITTED'`)
+        .andWhere('sr.deletedAt IS NULL');
+
       let netPaymentsSummary = await applyFilters(netPaymentsQ, true).getRawMany();
 
       netSummary['totalPaymentReceived'] = netPaymentsSummary[0].totalPayment;
@@ -85,7 +91,7 @@ ipcMain.on('fetchSalesReportsMetrics', (event: IpcMainEvent, { startDate, endDat
 
       // Productwise summary
       let productWiseQ = particularsRepo.createQueryBuilder('sp')
-        .select('p.id as productId, p.name as product, \
+        .select('p.id as productId, p.name as product, b.name as brandName, \
         sum(sp.discountedCost) as totalSales');
       let productWiseSummary = await constructQuery(productWiseQ).groupBy('p.id')
         .orderBy('totalSales', 'DESC').limit(20).getRawMany();
@@ -111,6 +117,8 @@ ipcMain.on('fetchSalesReportsMetrics', (event: IpcMainEvent, { startDate, endDat
       let dateWiseSalesQ = salesRepo.createQueryBuilder('s')
         .select(`${isSameMonth ? 'strftime("%Y-%m-%d", s.date)' : 'strftime("%Y-%m", s.date)'} AS date, \
         sum(s.totalDiscountedCost) as totalBillCost`)
+        .where(`s.status ='SUBMITTED'`)
+        .andWhere('s.deletedAt IS NULL')
         .andWhere(`s.date >= '${dateWiseStartDate.toISOString()}'`)
         .andWhere(`s.date <= '${dateWiseEndDate.toISOString()}'`)
         .groupBy(`${isSameMonth ? 'strftime("%Y-%m-%d", s.date)' : 'strftime("%Y-%m", s.date)'}`)
@@ -121,7 +129,10 @@ ipcMain.on('fetchSalesReportsMetrics', (event: IpcMainEvent, { startDate, endDat
       // Datewise payments summary
       let dateWisePaymentsQ = salesPaymentsRepo.createQueryBuilder('p')
         .select(`${isSameMonth ? 'strftime("%Y-%m-%d", p.date)' : 'strftime("%Y-%m", p.date)'} AS date, \
-        sum(p.amount) as totalPayment`)
+        sum(p.amount) as totalPayment, sr.id`)
+        .leftJoin('sales', 'sr', 'sr.id=p.salesRecord')
+        .where(`sr.status ='SUBMITTED'`)
+        .andWhere('sr.deletedAt IS NULL')
         .andWhere(`p.date >= '${dateWiseStartDate.toISOString()}'`)
         .andWhere(`p.date <= '${dateWiseEndDate.toISOString()}'`)
         .groupBy(`${isSameMonth ? 'strftime("%Y-%m-%d", p.date)' : 'strftime("%Y-%m", p.date)'}`).orderBy('p.date', 'DESC');
