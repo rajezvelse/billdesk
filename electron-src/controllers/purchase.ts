@@ -1,6 +1,6 @@
 import { ipcMain, IpcMainEvent, BrowserWindow } from 'electron';
 import { Settings } from '../settings';
-import { Product, Vendor, Purchase, PurchaseParticulars, PurchasePayment, ProductCategory, Brand } from '../entity';
+import { Product, Vendor, Purchase, PurchaseParticulars, PurchasePayment, ProductCategory, Brand, ProductStocks } from '../entity';
 import { Like, Brackets } from 'typeorm';
 import { print, generateRecordNumber } from '../utils';
 
@@ -13,7 +13,7 @@ ipcMain.on('getPurchaseFormData', (event: IpcMainEvent) => {
       let vendorRepository = connection.getRepository(Vendor);
 
       let cQuery = vendorRepository.createQueryBuilder('c')
-        .select(['c.id, c.name, c.phone']);
+        .select(['c.id, c.name']);
 
       cQuery = cQuery.orderBy('c.name', 'ASC');
 
@@ -185,7 +185,7 @@ ipcMain.on('saveNewPurchase', (event: IpcMainEvent, { id, status, date, vendor, 
         vendorRecord = await vendorRepository.findOne({ id: vendor.vendorId });
       }
 
-      if(!vendorRecord) Settings.sendWebContent('saveNewPurchaseResponse', 404, 'Vendor not found');
+      if (!vendorRecord) Settings.sendWebContent('saveNewPurchaseResponse', 404, 'Vendor not found');
 
 
       // Purchase record
@@ -267,6 +267,45 @@ ipcMain.on('saveNewPurchase', (event: IpcMainEvent, { id, status, date, vendor, 
             await purchaseParticularsRepo.delete(existingParticularsRecords.map((p: PurchaseParticulars) => p.id));
 
           await purchaseParticularsRepo.save(particularsRecords);
+
+          // Update stocks
+          if (status === 'SUBMITTED' && particularsRecords.length > 0) {
+            const stocksRepo = connection.getRepository(ProductStocks);
+
+
+            let i: number = 0, stockRecords: ProductStocks[] = [];
+
+            let updateStocks = async (loopIndex: number) => {
+              let particular: PurchaseParticulars = particularsRecords[loopIndex];
+              let purchasePrice = particular.discountedCost / particular.quantity;
+
+              let stockEntries = await stocksRepo.find({ where: { product: particular.product, price: purchasePrice } });
+
+              let stockMatchEntry;
+
+              if (stockEntries.length) stockMatchEntry = stockEntries[0]
+              else {
+                stockMatchEntry = new ProductStocks();
+                stockMatchEntry.product = particular.product;
+                stockMatchEntry.price = purchasePrice;
+                stockMatchEntry.quantityAvailable = 0;
+              }
+
+              stockMatchEntry.quantityAvailable += particular.quantity;
+
+              stockRecords.push(stockMatchEntry);
+
+              if (i + 1 < particularsRecords.length) {
+                i += 1;
+                await updateStocks(i);
+              }
+            }
+
+            await updateStocks(0);
+
+            if (stockRecords.length > 0) await stocksRepo.save(stockRecords);
+          }
+
         }
 
 
@@ -343,7 +382,7 @@ ipcMain.on('fetchPurchaseData', (event: IpcMainEvent, { id }) => {
 
       let response = JSON.parse(JSON.stringify(record));
       response.particulars = await particularsRepo.find({ where: { purchaseRecord: record }, relations: ['product', 'product.category'] });
-      response.payments = await purchasePaymentsRepo.find({ where: { purchaseRecord: record } });
+      response.payments = await purchasePaymentsRepo.find({ where: { purchaseRecord: record }, order: { date: 'ASC' } });
 
       Settings.sendWebContent('fetchPurchaseDataResponse', 200, response);
 
@@ -391,13 +430,45 @@ ipcMain.on('deletePurchase', (event: IpcMainEvent, { id }) => {
 
   Settings.getConnection().then(async connection => {
     try {
-      let purchaseRepo = connection.getRepository(Purchase);
+      let purchaseRepo = connection.getRepository(Purchase),
+        particularsRepo = connection.getRepository(PurchaseParticulars),
+        stocksRepor = connection.getRepository(ProductStocks);
 
       let record = await purchaseRepo.findOne(id);
 
       if (!record) {
         Settings.sendWebContent('deletePurchaseDraftResponse', 404, 'No Purchase record found');
         return;
+      }
+      let particularsRecords = await particularsRepo.find({ where: { purchaseRecord: record }, relations: ['product'] });
+
+      // Update stocks
+      if (particularsRecords.length > 0) {
+        const stocksRepo = connection.getRepository(ProductStocks);
+
+        let i: number = 0, stockRecords: ProductStocks[] = [];
+
+        let updateStocks = async (loopIndex: number) => {
+          let particular: PurchaseParticulars = particularsRecords[loopIndex];
+          let purchasePrice = particular.discountedCost / particular.quantity;
+
+          let stockEntries = await stocksRepo.find({ where: { product: particular.product, price: purchasePrice } });
+
+          if (stockEntries.length) {
+            let stockMatchEntry = stockEntries[0];
+            stockMatchEntry.quantityAvailable -= particular.quantity;
+
+            stockRecords.push(stockMatchEntry);
+          }
+
+          if (i + 1 < particularsRecords.length) {
+            i += 1;
+            await updateStocks(i);
+          }
+        }
+
+        await updateStocks(0);
+        if (stockRecords.length > 0) await stocksRepo.save(stockRecords);
       }
 
       await purchaseRepo.softDelete(record.id);

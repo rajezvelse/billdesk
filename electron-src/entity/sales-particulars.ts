@@ -29,4 +29,13 @@ export class SalesParticulars extends BaseEntity {
   @Column()
   discountedCost: number;
 
+  @Column({
+    nullable: true,
+    type: 'text'
+  })
+  purchaseCostPortions: string;
+
+  @Column()
+  profit: number;
+
 }

@@ -228,9 +228,9 @@ super.componentDidMount();
                 </CardSectionTitle>
                 <ScrollWrapper >
                   <ItemsList>
-                    {this.state.productCategories.map((item) => <ListItem key={uniqueId()} onClick={() => this.viewProductCategory(item)} className={this.state.selectedProductCategory && item.id == this.state.selectedProductCategory.id ? 'selected' : ''}>
+                    {this.state.productCategories.map((item) => <ListItem key={uniqueId()} onClick={() => this.viewProductCategory(item)} className={this.state.selectedProductCategory && item.id === this.state.selectedProductCategory.id ? 'selected' : ''}>
                       <ListItemText>{item.category}</ListItemText>
-                      {this.state.selectedProductCategory && item.id == this.state.selectedProductCategory.id && <DoubleArrowIcon color="primary" style={{ fontSize: "2rem" }} />}
+                      {this.state.selectedProductCategory && item.id === this.state.selectedProductCategory.id && <DoubleArrowIcon color="primary" style={{ fontSize: "2rem" }} />}
                     </ListItem>)}
                   </ItemsList>
                 </ScrollWrapper>

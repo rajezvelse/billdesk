@@ -50,6 +50,8 @@ interface formValuesType {
     uid: string;
     rowNumber: number;
     productId: number | null;
+    quantityAvailable: number;
+    quantityRemaining: number;
     price: number;
     quantity: number;
     cost: number;
@@ -96,6 +98,8 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
           then: Yup.number().required().positive().integer().nullable(false),
           otherwise: Yup.number().nullable()
         }),
+        quantityAvailable: Yup.number(),
+        quantityRemaining: Yup.number().moreThan(-1),
         price: Yup.number().when('productId', {
           is: (productId: any) => !!productId,
           then: Yup.number().required(),
@@ -166,18 +170,18 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
 
   onNewProps(nextProps: any) {
 
-    if (nextProps.saleId) {
-      if (nextProps.saleId !== this.state.saleId) {
+    // if (nextProps.saleId) {
+      if (nextProps.saleId && nextProps.saleId !== this.state.saleId) {
         this.fetchSaleData(nextProps.saleId);
       }
-    } else {
-      this.setState({
-        formValues: this.getFormDefaultValue(),
-        customerDetailsActionField: null,
-        particularsLastRowNum: 1,
-        saleId: null
-      })
-    }
+    // } else {
+    //   this.setState({
+    //     formValues: this.getFormDefaultValue(),
+    //     customerDetailsActionField: null,
+    //     particularsLastRowNum: 1,
+    //     saleId: null
+    //   })
+    // }
   }
 
 
@@ -201,7 +205,7 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
     this.context.electronIpc.send("getSalesFormData");
   }
 
-  fetchSaleData = (saleId: number | null ) => {
+  fetchSaleData = (saleId: number | null) => {
 
     this.context.electronIpc.once("fetchSaleDataResponse", (event: IpcRendererEvent, status: number, response: any) => {
       this.context.setLoading(false);
@@ -222,9 +226,14 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
             phone: response.customer.phone
           },
           particulars: response.particulars.map((p: any, index: number) => {
+            let product: any = this.state.products.find((pdt: any) => pdt.id === p.product.id);
+            let qtyA: number = product ? product.quantityAvailable : 0;
+
             return {
               uid: uniqueId(),
               rowNumber: index + 1,
+              quantityAvailable: qtyA,
+              quantityRemaining: qtyA - p.quantity,
               productId: p.product.id,
               price: p.price,
               quantity: p.quantity,
@@ -267,16 +276,21 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
 
   }
 
-  updateItemRow = (setFieldValue: Function, arrayHelpers: any, index: number, price: number, qty: number, discount: number, modifiedField?: string) => {
+  updateItemRow = (setFieldValue: Function, arrayHelpers: any, index: number, price: number, qty: number, discount: number, quantityRemaining: number, modifiedField?: string) => {
     let cost: number = price * qty,
       dCost: number = (cost - discount),
       fPrefix: string = `particulars[${index}].`;
+
+    // Updating available qty
+    setFieldValue(fPrefix + 'quantityRemaining', quantityRemaining, true);
 
     if (modifiedField !== 'price') setFieldValue(fPrefix + 'price', price, true);
     if (modifiedField !== 'quantity') setFieldValue(fPrefix + 'quantity', qty, true);
     if (modifiedField !== 'cost') setFieldValue(fPrefix + 'cost', cost, true);
     if (modifiedField !== 'discount') setFieldValue(fPrefix + 'discount', discount, true);
     if (modifiedField !== 'discountedCost') setFieldValue(fPrefix + 'discountedCost', dCost, true);
+
+
 
   }
 
@@ -299,8 +313,10 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
   getNewRow = () => {
 
     return {
-      uid: uniqueId(),
+      uid: uniqueId() + (new Date()).getTime(),
       rowNumber: this.state ? this.state.particularsLastRowNum + 1 : 1,
+      quantityAvailable: 0,
+      quantityRemaining: 0,
       productId: null,
       price: 0,
       quantity: 0,
@@ -339,7 +355,7 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
 
       this.context.electronIpc.once('saveNewSaleResponse', (event: IpcRendererEvent, status: number, response: any) => {
         this.context.setLoading(false);
-        
+
         // On fail
         if (status !== 200) {
           reject(response);
@@ -395,7 +411,7 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
       });
 
       this.context.setLoading(true);
-      this.context.electronIpc.send("deleteSalesDraft", { id: this.props.saleId });
+      this.context.electronIpc.send("deleteSalesDraft", { id: this.state.saleId });
     })
   }
 
@@ -439,12 +455,13 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
                 validationSchema={this.validationSchema}
                 validateOnMount={true}
                 enableReinitialize={true}
-                onSubmit={(values, { setSubmitting, resetForm }) => {
+                onSubmit={(values, { setSubmitting, resetForm, setTouched }) => {
                   this.handleSubmit('SUBMIT', values).then(val => {
                     setSubmitting(false);
 
                     if (val === 'DRAFT' || val === 'SUBMITNEW') this.setState({ formValues: this.getFormDefaultValue(), saleId: null }, () => {
                       resetForm()
+
                     });
 
                   }).catch(err => setSubmitting(false));
@@ -698,6 +715,10 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
                                                     return filtered;
                                                   }}
 
+                                                  getOptionDisabled={(option: any) => {
+                                                    return option ? option.quantityAvailable <= 0 : false;
+                                                  }}
+
                                                   size="small"
                                                   value={(fParams.field.value && fParams.field.value !== '' && this.state.products.length) ? (this.state.products.find((p: any) => p.id === fParams.field.value) || null) : null}
                                                   renderInput={(params: any) => <TextField {...params} placeholder="Select product" type="text" variant="outlined" error={getIn(touched, `particulars[${index}].productId`) && !!getIn(errors, `particulars[${index}].productId`)} />}
@@ -717,8 +738,10 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
                                                     }
                                                     else {
                                                       fParams.form.setFieldValue(fParams.field.name, value ? value.id : null, true);
+                                                      fParams.form.setFieldValue(`particulars[${index}].quantityAvailable`, value ? value.quantityAvailable : 0, true);
 
-                                                      this.updateItemRow(fParams.form.setFieldValue, arrayHelpers, index, value ? value.price : 0, value ? 1 : 0, 0);
+
+                                                      this.updateItemRow(fParams.form.setFieldValue, arrayHelpers, index, value ? value.price : 0, value ? 1 : 0, 0, value ? value.quantityAvailable - 1 : 0);
                                                       if (values.particulars.length - 1 === index) { arrayHelpers.push(this.getNewRow()); this.setState({ particularsLastRowNum: this.state.particularsLastRowNum + 1 }) }
                                                     }
 
@@ -731,7 +754,10 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
                                           </td>
                                           <RightAlignedTd><Currency value={values.particulars[index].price} /></RightAlignedTd>
                                           <td>
-                                            <Field as={ParticularsQtyField} name={`particulars[${index}].quantity`} disabled={!values.particulars[index].productId} type="number" placeholder="Quantity" required variant="outlined" size="small" error={getIn(touched, `particulars[${index}].quantity`) && !!getIn(errors, `particulars[${index}].quantity`)}
+                                            <Field as={ParticularsQtyField} name={`particulars[${index}].quantity`} disabled={!values.particulars[index].productId} type="number" placeholder="Quantity" required variant="outlined" size="small" error={(getIn(touched, `particulars[${index}].quantity`) && !!getIn(errors, `particulars[${index}].quantity`)) || !!getIn(errors, `particulars[${index}].quantityRemaining`)}
+                                              InputProps={{
+                                                endAdornment: <InputAdornment position="end"><small>/ {values.particulars[index].quantityAvailable}</small></InputAdornment>,
+                                              }}
                                               onChange={(e: any) => {
 
                                                 let item = values.particulars[index];
@@ -739,7 +765,7 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
 
                                                 this.debounce(
                                                   () => {
-                                                    this.updateItemRow(setFieldValue, arrayHelpers, index, item.price, e.target.value, item.discount, 'quantity');
+                                                    this.updateItemRow(setFieldValue, arrayHelpers, index, item.price, e.target.value, item.discount, item.quantityAvailable - e.target.value, 'quantity');
                                                     if (values.particulars.length - 1 === index) { arrayHelpers.push(this.getNewRow()); this.setState({ particularsLastRowNum: this.state.particularsLastRowNum + 1 }) }
                                                   }
                                                 );
@@ -759,7 +785,7 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
 
                                                 this.debounce(
                                                   () => {
-                                                    this.updateItemRow(setFieldValue, arrayHelpers, index, item.price, item.quantity, e.target.value, 'discount');
+                                                    this.updateItemRow(setFieldValue, arrayHelpers, index, item.price, item.quantity, e.target.value, item.quantityRemaining, 'discount');
                                                     if (values.particulars.length - 1 === index) { arrayHelpers.push(this.getNewRow()); this.setState({ particularsLastRowNum: this.state.particularsLastRowNum + 1 }) }
                                                   }
                                                 );
@@ -775,9 +801,11 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
                                                   onClick={(e: any) => {
                                                     arrayHelpers.remove(index);
 
-                                                    if (values.particulars.length === 0) { arrayHelpers.push(this.getNewRow()); }
-
-                                                    this.setState({ particularsLastRowNum: this.state.particularsLastRowNum + 1 });
+                                                    if (values.particulars.length === 0) {
+                                                      arrayHelpers.push(this.getNewRow());
+                                                      this.setState({ particularsLastRowNum: this.state.particularsLastRowNum + 1 });
+                                                    }                                                    
+                                                    
                                                   }}>
                                                   <HighlightOffIcon />
                                                 </IconButton>
@@ -846,7 +874,7 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
 
                           <FormActions>
                             <Button type="button" disabled={isSubmitting || this.state.deleting} onClick={(e: any) => resetForm()} variant="contained" color="default" size="small">Reset</Button>
-                            {this.props.saleId &&
+                            {this.state.saleId &&
                               <Button type="button" disabled={isSubmitting || this.state.deleting} onClick={(e: any) => {
                                 this.setState({ showPaymentDeleteWarning: true })
                               }} variant="contained" color="secondary" size="small">Delete draft</Button>
@@ -899,7 +927,6 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
             <Drawer anchor={'right'} open={this.state.showDraftDrawer} onClose={() => { if (this.state.showDraftDrawer) this.setState({ showDraftDrawer: false }) }}>
               <SalesDrafts onClose={(saleId?: number) => {
                 this.setState({ showDraftDrawer: false }, () => {
-                  this.loadFormData();
                   this.fetchSaleData(saleId || null);
                 })
               }} />

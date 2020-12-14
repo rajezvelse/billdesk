@@ -5,10 +5,10 @@ import { IpcRendererEvent } from "electron";
 import RootContext from '../../root.context';
 
 import {
-  FormControl, Form, ValidationError, Autocomplete, SelectSmall
+  FormControl, Form, ValidationError, SelectSmall
 } from '../../styled-components';
 import {
-  Grid, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Select, MenuItem, InputAdornment
+  Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, MenuItem, InputAdornment
 } from '@material-ui/core';
 import DateFnsUtils from '@date-io/date-fns';
 import {

@@ -4,8 +4,8 @@ import RootContext from '../root.context';
 import { Activity } from "../directives";
 
 import {
-  PageHeader, PageHeaderTitle, PageContainer, Footer, ImagedBackgroundDark, MainContentWrapper, 
-  TopNavContainer, TopNav, TopNavItem, TopNavLogo, TopNavTools, ProfileAvatar, 
+  PageHeader, PageHeaderTitle, PageContainer, Footer, ImagedBackgroundDark, MainContentWrapper,
+  TopNavContainer, TopNav, TopNavItem, TopNavLogo, TopNavTools, ProfileAvatar,
   TopMenuIconButton, DropdownMenu, TooltipLight, ApiLoader
 } from '../styled-components';
 import { Grid } from '@material-ui/core';
@@ -15,6 +15,7 @@ import LockIcon from '@material-ui/icons/Lock';
 import mainLogo from '../assets/images/logo-h.png';
 
 import SalesMenu from './sales/sales-menu';
+import PurchaseMenu from './purchase/purchase-menu';
 
 class Main extends ReactComponent<any, any> {
 
@@ -43,11 +44,12 @@ class Main extends ReactComponent<any, any> {
               <MainContentWrapper>
                 {/* Top menu */}
                 <TopNavContainer>
-                  <TopNavLogo><img src={mainLogo} /></TopNavLogo>
+                  <TopNavLogo><img src={mainLogo} alt="" /></TopNavLogo>
                   <TopNav>
                     <TopNavItem onClick={() => navigate('Dashboard', {}, 'Dashboard')} className={activeView.name === 'Dashboard' ? 'active' : ''}>Dashboard</TopNavItem>
-                    <TopNavItem onClick={() => navigate('Purchase', {}, 'Purchase')} className={activeView.name === 'Purchase' ? 'active' : ''}>Purchase</TopNavItem>
+                    <TopNavItem onClick={() => navigate('NewPurchase', {}, 'New Purchase')} className={['NewPurchase', 'PurchaseDetails', 'PurchaseReports', 'Stocks'].indexOf(activeView.name) >= 0 ? 'active' : ''}>Purchase</TopNavItem>
                     <TopNavItem onClick={() => navigate('NewSale', {}, 'New Sale')} className={['NewSale', 'SaleDetails', 'SalesReports', 'Customers'].indexOf(activeView.name) >= 0 ? 'active' : ''}>Sales</TopNavItem>
+                    <TopNavItem onClick={() => navigate('ExpensesList', {}, 'Expenses')} className={activeView.name === 'ExpenseList' ? 'active' : ''}>Expenses</TopNavItem>
                   </TopNav>
 
                   <TopNavTools>
@@ -74,6 +76,7 @@ class Main extends ReactComponent<any, any> {
                           <li onClick={() => navigate('ProductsList', {}, 'Products')}>Products</li>
                           <li onClick={() => navigate('ProductCategories', {}, 'Product Categories')}>Product Categories</li>
                           <li onClick={() => navigate('Brands', {}, 'Vehicle Models')}>Vehicle Models</li>
+                          <li onClick={() => navigate('ExpenseCategories', {}, 'Expense Categories')}>Expense Categories</li>
                           <li onClick={() => navigate('CompanySettings', {}, 'Settings')}>Settings</li>
                         </ul>
                       </DropdownMenu>
@@ -97,6 +100,12 @@ class Main extends ReactComponent<any, any> {
                           return (<>
                             <Grid container>
                               <SalesMenu />
+                            </Grid>
+                          </>);
+                        else if (['NewPurchase', 'PurchaseDetails', 'PurchaseReports', 'Stocks', 'ScrapsList'].indexOf(activeView.name) >= 0)
+                          return (<>
+                            <Grid container>
+                              <PurchaseMenu />
                             </Grid>
                           </>);
                         else return <PageHeaderTitle>{activeView.title}</PageHeaderTitle>;

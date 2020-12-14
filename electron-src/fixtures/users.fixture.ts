@@ -17,7 +17,7 @@ export const load = async (connection: Connection) => {
 
         user.username = 'dinesh';
         user.role = adminRole;
-        user.setRawPassword('kvmd1274');
+        user.setRawPassword('kavi8878');
         user.firstName = 'Dinesh';
         user.email = 'dinesh1992kd@gmail.com';
         user.avatar = 1;

@@ -12,4 +12,8 @@ export { SalesPayment } from './sales-payments'
 export { Purchase } from './purchase'
 export { PurchaseParticulars } from './purchase-particulars'
 export { PurchasePayment } from './purchase-payments'
+export { ExpenseCategory } from './expense-categories'
+export { Expense } from './expenses'
+export { ProductStocks } from './product-stocks'
+export { Scraps } from './scraps'
  

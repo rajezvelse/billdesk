@@ -269,9 +269,9 @@ super.componentDidMount();
                     />
                   </FormControl>
 
-                  {this.state.customers.map((item) => <ListItem key={uniqueId()} onClick={() => this.viewCustomer(item)} className={this.state.selectedCustomer && item.id == this.state.selectedCustomer.id ? 'selected' : ''}>
+                  {this.state.customers.map((item) => <ListItem key={uniqueId()} onClick={() => this.viewCustomer(item)} className={this.state.selectedCustomer && item.id === this.state.selectedCustomer.id ? 'selected' : ''}>
                     <ListItemText primary={item.name} secondary={item.phone}></ListItemText>
-                    {this.state.selectedCustomer && item.id == this.state.selectedCustomer.id && <DoubleArrowIcon color="primary" style={{ fontSize: "2rem" }} />}
+                    {this.state.selectedCustomer && item.id === this.state.selectedCustomer.id && <DoubleArrowIcon color="primary" style={{ fontSize: "2rem" }} />}
                   </ListItem>)}
 
                   {this.state.customers.length === 0 && <div>No customers found.</div>}
@@ -288,8 +288,13 @@ super.componentDidMount();
 
             <FormContent>
               <DetailRow>
-                <DetailLabel xs={5}>Model name</DetailLabel>
+                <DetailLabel xs={5}>Customer name</DetailLabel>
                 <DetailValue xs={7}>{this.state.selectedCustomer.name}</DetailValue>
+              </DetailRow>
+
+              <DetailRow>
+                <DetailLabel xs={5}>Customer phone</DetailLabel>
+                <DetailValue xs={7}>{this.state.selectedCustomer.phone? this.state.selectedCustomer.phone: '-'}</DetailValue>
               </DetailRow>
 
               <FormActions>

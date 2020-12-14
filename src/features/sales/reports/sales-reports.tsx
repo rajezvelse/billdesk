@@ -144,7 +144,7 @@ class SalesReports extends ReactComponent<any, {
 
             <TableFilterGrid>
               <Grid container spacing={3}>
-                <Grid item xs={2} md={6}>
+                <Grid item xs={12} md={6}>
                   <DetailRow>
                     <DetailLabel xs={3}>Report view</DetailLabel>
                     <DetailValue xs={9}>

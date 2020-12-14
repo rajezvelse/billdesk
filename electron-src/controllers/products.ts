@@ -183,8 +183,8 @@ ipcMain.on('getProductFormData', (params?: any) => {
       let pcRepo = connection.getRepository(ProductCategory);
       let brandRepo = connection.getRepository(Brand);
 
-      let categories = await pcRepo.find({ select: ['id', 'category'] });
-      let brands = await brandRepo.find({ select: ['id', 'name'] });
+      let categories = await pcRepo.find({ select: ['id', 'category'], order: { category: 'ASC'}  });
+      let brands = await brandRepo.find({ select: ['id', 'name'], order: { name: 'ASC'}  });
 
       Settings.sendWebContent('getProductFormDataResponse', 200, { categories, brands });
 
@@ -238,7 +238,6 @@ ipcMain.on('updateProduct', (event: IpcMainEvent, { id, name, brand, category, p
         return;
       }
 
-      product.name = name;
       product.name = name;
       product.brand = brand;
       product.category = category;

@@ -14,7 +14,7 @@ import { StylesProvider, MuiThemeProvider } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
 
 const defaultHistory: HistoryItemType[] = [
-  { name: 'NewSale', params: {}, title: 'New sale' }
+  { name: 'Dashboard', params: {}, title: 'Dashboard' }
 ];
 
 class App extends ReactComponent<any, RootContextType> {
@@ -47,21 +47,21 @@ class App extends ReactComponent<any, RootContextType> {
       activeView: defaultHistory[defaultHistory.length - 1],
       history: defaultHistory,
       apiCallsInAction: [],
-      userInfo: null
+      // userInfo: null
 
-      // userInfo: {
-      //   "avatar": 1,
-      //   "createdAt": "2020-01-24T10:08:10.000Z",
-      //   "deleted": false,
-      //   "email": "admin@billdesk.com",
-      //   "firstName": "Administrator",
-      //   "id": 2,
-      //   "lastName": null,
-      //   "password": "$2b$10$ij7Jc1whEvlAsFcKhwgOzOLz66W2hZqhQeBnBYUisyvRYtxzx6LFK",
-      //   "phone": null,
-      //   "updatedAt": "2020-01-24T10:08:10.000Z",
-      //   "username": "admin"
-      // }
+      userInfo: {
+        "avatar": 1,
+        "createdAt": "2020-01-24T10:08:10.000Z",
+        "deleted": false,
+        "email": "admin@billdesk.com",
+        "firstName": "Administrator",
+        "id": 2,
+        "lastName": null,
+        "password": "$2b$10$ij7Jc1whEvlAsFcKhwgOzOLz66W2hZqhQeBnBYUisyvRYtxzx6LFK",
+        "phone": null,
+        "updatedAt": "2020-01-24T10:08:10.000Z",
+        "username": "admin"
+      }
     };
   }
 

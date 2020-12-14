@@ -1,13 +1,14 @@
 {
   "name": "billdesk",
   "productName": "BillDesk",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Automobile spares billing application",
   "author": "rajezvelse",
   "license": "MIT",
   "main": "dist/electron/electron.main.js",
   "homepage": "./",
   "scripts": {
+    "electron": "electron",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "build:server": "tsc -p tsconfig.electron.json",
@@ -97,7 +98,6 @@
     "@types/react": "^16.9.43",
     "@types/react-dom": "^16.9.8",
     "@types/recharts": "^1.8.16",
-    "bcrypt": "^5.0.0",
     "date-fns": "^2.16.1",
     "formik": "^2.1.5",
     "formik-material-ui": "^2.0.1",

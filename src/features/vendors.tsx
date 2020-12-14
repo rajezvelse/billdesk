@@ -264,9 +264,9 @@ super.componentDidMount();
                 </CardSectionTitle>
                 <ScrollWrapper >
                   <ItemsList>
-                    {this.state.vendors.map((item) => <ListItem key={uniqueId()} onClick={() => this.viewVendor(item)} className={this.state.selectedVendor && item.id == this.state.selectedVendor.id ? 'selected' : ''}>
+                    {this.state.vendors.map((item) => <ListItem key={uniqueId()} onClick={() => this.viewVendor(item)} className={this.state.selectedVendor && item.id === this.state.selectedVendor.id ? 'selected' : ''}>
                       <ListItemText>{item.name}</ListItemText>
-                      {this.state.selectedVendor && item.id == this.state.selectedVendor.id && <DoubleArrowIcon color="primary" style={{ fontSize: "2rem" }} />}
+                      {this.state.selectedVendor && item.id === this.state.selectedVendor.id && <DoubleArrowIcon color="primary" style={{ fontSize: "2rem" }} />}
                     </ListItem>)}
                   </ItemsList>
                 </ScrollWrapper>

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Avatar, Typography, Modal, Grid, Tooltip, TableHead as TH, Divider, Button } from '@material-ui/core';
+import { Typography, Modal, Grid, Tooltip, TableHead as TH, Divider, Button } from '@material-ui/core';
 import avatars from '../assets/images/avatars.jpg';
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 
@@ -88,6 +88,8 @@ border-bottom: 1px solid ${props => props.theme.palette.grey['200']};
 button {
   float: right;
   right: 15px;
+  margin-left: ${props => props.theme.spacing(2)}px;
+  min-height: 32px;
 }
 `;
 

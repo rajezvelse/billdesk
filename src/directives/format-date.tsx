@@ -1,5 +1,4 @@
 import React from 'react'
-import moment from 'moment';
 import { formatDate } from '../utils';
 
 const FormatDate: React.FC<{value: Date | undefined; format?: string}> = (props: any) => {

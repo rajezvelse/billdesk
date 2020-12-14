@@ -273,12 +273,13 @@ class SalesReportsRecords extends ReactComponent<WithSnackbarProps & {
                               ))}
                             </TableBody>
                           </Table>
-
+                          
+                          {this.state.data.length === 0 && <div>No records available.</div>}
                         </TableContainer>
                         {this.state.totalPages > 0 &&
                           <TablePagination
                             component='div'
-                            count={this.state.totalPages}
+                            count={this.state.totalRecords}
                             rowsPerPage={this.state.pageLimit}
                             rowsPerPageOptions={[]}
                             page={this.state.currentPage - 1}

@@ -3,9 +3,6 @@ import React from 'react';
 class ReactComponent<P, S> extends React.Component<P, S> {
   isUnmounted: boolean = false;
 
-  constructor(props: P) {
-    super(props);
-  }
 
   componentDidMount() {
     this.isUnmounted = false;

@@ -1,9 +1,8 @@
 import React from 'react'
 import ReactComponent from '../../react-component'
 
-import { IpcRendererEvent } from "electron";
 import RootContext from '../../root.context';
-import { SecondaryMenuContainer, SecondaryMenuTitle, SecondaryMenu, SecondaryMenuItem } from '../../styled-components';
+import { SecondaryMenuContainer, SecondaryMenu, SecondaryMenuItem } from '../../styled-components';
 
 class SalesMenu extends ReactComponent<any, {
 }> {

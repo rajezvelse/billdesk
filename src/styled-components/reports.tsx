@@ -1,6 +1,5 @@
-import React from 'react'
 import  styled  from 'styled-components'
-import { Tab, Tabs, Card, Button, Dialog } from '@material-ui/core'
+import { Tab, Tabs, Card, Button, Dialog, Divider } from '@material-ui/core'
 
 
 export const ReportViews = styled(Tabs)`
@@ -95,6 +94,14 @@ text-decoration: underline dotted;
 padding: 5px;
 `;
 
+export const ReportChartTitleSpaced = styled.div`
+text-align: center;
+font-size: 0.9rem;
+text-decoration: underline dotted;
+padding: 5px;
+margin-bottom: 15px; 
+`;
+
 export const ReportChartNavLeft = styled.div`
 display: inline-block;
 position: absolute;
@@ -130,4 +137,24 @@ export const ReportChartBigView = styled(Dialog)`
   right: 30px !important;
   z-index: 1
 }
+`;
+
+export const ViewMoreButton = styled(Button)`
+font-size: 11px;
+text-transform: none;
+padding: 6px 0;
+text-decoration: underline;
+color: #fafaffd1;
+
+&:hover {
+  background: transparent;
+  color: #fff;
+  text-decoration: underline;
+}
+`;
+
+export const ReportDivider = styled(Divider)`
+margin: 20px 0;
+border: none;
+background-color: transparent;
 `;

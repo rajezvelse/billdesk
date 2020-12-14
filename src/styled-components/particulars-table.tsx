@@ -45,7 +45,12 @@ export const ParticularsTextField = styled(TextField)`
 `;
 
 export const ParticularsQtyField = styled(ParticularsTextField)`
-width: 70px;
+width: 100px;
+
+input {
+  padding-right: 0;
+}
+
 `;
 
 export const ParticularsDiscountField = styled(ParticularsTextField)`

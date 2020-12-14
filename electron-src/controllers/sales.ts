@@ -1,8 +1,8 @@
 import { ipcMain, IpcMainEvent, BrowserWindow } from 'electron';
 import { Settings } from '../settings';
-import { Product, Customer, Sales, SalesParticulars, SalesPayment, ProductCategory, Brand } from '../entity';
-import { Like, Brackets } from 'typeorm';
-import { print, generateRecordNumber } from '../utils';
+import { Product, Customer, Sales, SalesParticulars, SalesPayment, ProductCategory, Brand, ProductStocks } from '../entity';
+import { Brackets, MoreThan, In } from 'typeorm';
+import { generateRecordNumber } from '../utils';
 
 ipcMain.on('getSalesFormData', (event: IpcMainEvent) => {
 
@@ -24,12 +24,19 @@ ipcMain.on('getSalesFormData', (event: IpcMainEvent) => {
       let productRepository = connection.getRepository(Product);
 
       let query = productRepository.createQueryBuilder('p')
-        .select(['p.id, p.price, p.name as productName, b.name as brandName'])
-        .leftJoin('brand', 'b', 'b.id=p.brand');
+        .select(['p.id, p.price, p.name as productName, b.name as brandName, SUM(st.quantityAvailable) as quantityAvailable'])
+        .leftJoin('brand', 'b', 'b.id=p.brand')
+        .leftJoin('product_stocks', 'st', 'st.product=p.id')
+        .groupBy('p.id');
 
       query = query.orderBy('b.name', 'ASC').orderBy('p.name', 'ASC');
 
-      const products = await query.getRawMany();
+      let products = await query.getRawMany();
+
+      products = products.map((p: any) => {
+        if(p.quantityAvailable === null) p.quantityAvailable = 0;
+        return p;
+      })
 
       Settings.sendWebContent('getSalesFormDataResponse', 200, { customers, products });
 
@@ -245,7 +252,10 @@ ipcMain.on('saveNewSale', (event: IpcMainEvent, { id, status, date, customer, pa
           let existingParticularsRecords: Array<SalesParticulars> = await salesParticularsRepo.find({ salesRecord: salesRecord });
           let particularsRecords: Array<SalesParticulars> = [];
 
-          let products = await productRepo.findByIds(particulars.map((p: any) => p.productId));
+          const stocksRepo = connection.getRepository(ProductStocks);
+
+          let stockDetails = await stocksRepo.find({ where: { product: In(particulars.map((p: any) => p.productId)), quantityAvailable: MoreThan(0) }, order: { product: 'ASC', quantityAvailable: 'ASC' }, relations: ['product'] });
+          let stockRecordsToBeUpdated: ProductStocks[] = [];
 
           particulars.forEach((p: any) => {
 
@@ -264,6 +274,51 @@ ipcMain.on('saveNewSale', (event: IpcMainEvent, { id, status, date, customer, pa
             pRec.cost = p.cost;
             pRec.discount = p.discount;
             pRec.discountedCost = p.discountedCost;
+            pRec.purchaseCostPortions = null;
+            pRec.profit = 0;
+
+            // Revising the stocks records
+            if (status === 'SUBMITTED') {
+              let purchaseCostPortions = [];
+
+              let matches = stockDetails.filter((sr: ProductStocks) => sr.product.id === p.productId);
+              let soldQty: number = p.quantity;
+
+              for (let smi: number = 0; smi < matches.length; smi++) {
+                let stockMatch: ProductStocks = matches[smi];
+
+                if (stockMatch.quantityAvailable >= soldQty) {
+                  stockMatch.quantityAvailable -= soldQty;
+                  stockRecordsToBeUpdated.push(stockMatch);
+
+                  purchaseCostPortions.push({
+                    q: soldQty,
+                    p: stockMatch.price,
+                    pr: (p.price * soldQty) - (stockMatch.price * soldQty)
+                  })
+
+                  break;
+
+                } else {
+                  let processingQty: number = stockMatch.quantityAvailable;
+                  soldQty -= processingQty;
+                  stockMatch.quantityAvailable = 0;
+                  stockRecordsToBeUpdated.push(stockMatch);
+
+                  purchaseCostPortions.push({
+                    q: processingQty,
+                    p: stockMatch.price,
+                    pr: (p.price * processingQty) - (stockMatch.price * processingQty)
+                  })
+
+                  if (soldQty > 0) continue; else break;
+                }
+              }
+
+              pRec.profit = purchaseCostPortions.reduce((tot: number, portion: any) => tot + portion['pr'], 0) - p.discount;
+              pRec.purchaseCostPortions = JSON.stringify(purchaseCostPortions);
+
+            }
 
             particularsRecords.push(pRec);
 
@@ -273,6 +328,10 @@ ipcMain.on('saveNewSale', (event: IpcMainEvent, { id, status, date, customer, pa
             await salesParticularsRepo.delete(existingParticularsRecords.map((p: SalesParticulars) => p.id));
 
           await salesParticularsRepo.save(particularsRecords);
+
+          // Update stocks records
+          if (stockRecordsToBeUpdated.length > 0) await stocksRepo.save(stockRecordsToBeUpdated);
+
         }
 
 
@@ -349,7 +408,7 @@ ipcMain.on('fetchSaleData', (event: IpcMainEvent, { id }) => {
 
       let response = JSON.parse(JSON.stringify(record));
       response.particulars = await particularsRepo.find({ where: { salesRecord: record }, relations: ['product', 'product.category'] });
-      response.payments = await salesPaymentsRepo.find({ where: { salesRecord: record } });
+      response.payments = await salesPaymentsRepo.find({ where: { salesRecord: record }, order: { date: 'ASC' } });
 
       Settings.sendWebContent('fetchSaleDataResponse', 200, response);
 
@@ -404,6 +463,53 @@ ipcMain.on('deleteSale', (event: IpcMainEvent, { id }) => {
       if (!record) {
         Settings.sendWebContent('deleteSalesDraftResponse', 404, 'No Sale record found');
         return;
+      }
+
+      let salesParticularsRepo = connection.getRepository(SalesParticulars);
+      let particularsRecords: SalesParticulars[] = await salesParticularsRepo.find({ where: {salesRecord: record}, relations: ['product']});
+
+      // Update stocks
+      if (particularsRecords.length > 0) {
+        const stocksRepo = connection.getRepository(ProductStocks);
+        let particularsRecordsNormalized: any[] = [];
+
+        particularsRecords.forEach((p: SalesParticulars) => {
+          let portions = p.purchaseCostPortions !== null? JSON.parse(p.purchaseCostPortions): [];
+
+          portions.forEach((por: any) => {
+            particularsRecordsNormalized.push({
+              purchasePrice: por['p'],
+              productId: p.product.id,
+              quantity: por['q']
+            })
+          });
+        })
+
+        if(particularsRecordsNormalized.length > 0){
+          let i: number = 0, stockRecords: ProductStocks[] = [];
+
+          let updateStocks = async (loopIndex: number) => {
+            let particular: any = particularsRecordsNormalized[loopIndex];
+            let purchasePrice = particular['purchasePrice'];
+  
+            let stockEntries = await stocksRepo.find({ where: { product: particular['productId'], price: purchasePrice } });
+  
+            if (stockEntries.length) {
+              let stockMatchEntry = stockEntries[0];
+              stockMatchEntry.quantityAvailable += particular['quantity'];
+  
+              stockRecords.push(stockMatchEntry);
+            }
+  
+            if (i + 1 < particularsRecordsNormalized.length) {
+              i += 1;
+              await updateStocks(i);
+            }
+          }
+  
+          await updateStocks(0);
+          if (stockRecords.length > 0) await stocksRepo.save(stockRecords);
+        }
       }
 
       await salesRepo.softDelete(record.id);

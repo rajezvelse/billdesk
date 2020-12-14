@@ -6,7 +6,7 @@ import RootContext from '../../root.context';
 
 import uniqueId from 'lodash/uniqueId';
 import { InfoError, DraftsDrawerContainer, CardSectionTitle, ItemsList } from '../../styled-components';
-import { CardContent, ListItem, ListItemText, Chip } from '@material-ui/core';
+import { CardContent, ListItem, ListItemText } from '@material-ui/core';
 import { FormatDate } from '../../directives';
 
 class SalesDrafts extends ReactComponent<any, {

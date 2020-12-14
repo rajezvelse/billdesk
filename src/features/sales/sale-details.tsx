@@ -33,6 +33,9 @@ class SaleDetails extends ReactComponent<WithSnackbarProps & { id: number; }, {
   showPaymentDeleteWarning: boolean;
   selectedPaymentForDelete: number | null;
   deletePaymentError: null | string;
+  selectedForDelete: number | null;
+  showDeleteWarning: boolean;
+  deleteError: any;
 }> {
 
   constructor(props: any) {
@@ -45,7 +48,10 @@ class SaleDetails extends ReactComponent<WithSnackbarProps & { id: number; }, {
       openAddNewPaymentDialog: false,
       selectedPaymentForDelete: null,
       showPaymentDeleteWarning: false,
-      deletePaymentError: null
+      deletePaymentError: null,
+      selectedForDelete: null,
+      showDeleteWarning: false,
+      deleteError: null
     }
   }
 
@@ -80,9 +86,30 @@ this.context.electronIpc.send("fetchSaleData", { id: this.props.id });
     });
   }
 
+  deleteSale = (id: number) => {
+    this.context.electronIpc.once('deleteSaleResponse', (event: IpcRendererEvent, status: number, response: any) => {
+      this.context.setLoading(false);
+
+      // On fail
+      if (status !== 200) {
+        this.setState({ deleteError: response });
+        return;
+      }
+
+      // On success
+      this.setState({ showDeleteWarning: false }, () => this.context.navigateBack());
+      this.props.enqueueSnackbar('Deleted', { variant: 'success' })
+
+    });
+
+    // Send signal
+    this.context.setLoading(true);
+    this.context.electronIpc.send('deleteSale', { id })
+  }
+
   deletePayment = () => {
     this.context.electronIpc.once("deleteSalePaymentResponse", (event: IpcRendererEvent, status: number, response: any) => {
-this.context.setLoading(false);
+      this.context.setLoading(false);
 
       // On fail
       if (status !== 200) {
@@ -99,7 +126,7 @@ this.context.setLoading(false);
     });
 
     this.context.setLoading(true);
-this.context.electronIpc.send("deleteSalePayment", { id: this.state.selectedPaymentForDelete });
+    this.context.electronIpc.send("deleteSalePayment", { id: this.state.selectedPaymentForDelete });
   }
 
   getTotal = (values: Array<any>, field: string) => {
@@ -122,6 +149,12 @@ this.context.electronIpc.send("deleteSalePayment", { id: this.state.selectedPaym
 
                 <SectionTitle gutterBottom variant="h5">
                   Sale details
+
+                    <Tooltip title="Delete sale" arrow placement="top">
+                      <Button onClick={() => this.setState({ showDeleteWarning: true, selectedForDelete: this.state.data.id })} variant="contained" size="small" color="secondary">
+                        Delete
+                      </Button>
+                    </Tooltip>
                  
                     <Button onClick={() => navigateBack()} variant="contained" size="small" color="primary">
                       <DoubleArrowIconBack />
@@ -315,7 +348,26 @@ this.context.electronIpc.send("deleteSalePayment", { id: this.state.selectedPaym
               </Grid>
             </Grid>
 
-            {/* Delete warning   */}
+            
+            {/* Delete sale warning   */}
+            <StyledModal
+              open={this.state.showDeleteWarning}
+              onClose={() => this.setState({ showDeleteWarning: false })}
+            >
+              <div className="modal-content">
+                <p>Are you sure to delete?</p>
+                <WarningModalActions>
+
+                  <Button onClick={() => this.deleteSale(this.state.selectedForDelete as number)} type="button" variant="contained" color="secondary" size="small">Yes</Button>
+                  <Button onClick={() => this.setState({ showDeleteWarning: false })} type="button" variant="contained" color="default" size="small">No</Button>
+
+                </WarningModalActions>
+
+                <div>{this.state.deleteError && <ValidationError>{this.state.deleteError}</ValidationError>}</div>
+              </div>
+            </StyledModal>
+
+            {/* Delete payment warning   */}
             <StyledModal
               open={this.state.showPaymentDeleteWarning}
               onClose={() => this.setState({ showPaymentDeleteWarning: false })}
