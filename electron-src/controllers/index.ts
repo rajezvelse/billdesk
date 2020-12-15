@@ -1,5 +1,5 @@
 import './get-preferences';
-import './fetch-users';
+import './users';
 import './authenticate';
 import './vendors';
 import './product-categories';
@@ -19,3 +19,4 @@ import './expences'
 import './dashboard'
 import './scraps'
 import './productwise-profit'
+import './profile'

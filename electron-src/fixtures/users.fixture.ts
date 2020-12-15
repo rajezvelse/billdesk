@@ -7,12 +7,12 @@ export const load = async (connection: Connection) => {
     // Cump admin user if not exists
     let userRepository = connection.getRepository(User);
 
-    let adminUser = await userRepository.find({ username: 'admin' });
+    let adminUser = await userRepository.find({ username: 'dinesh' });
 
     if (adminUser.length == 0) {
         let roleRepository = connection.getRepository(Role);
 
-        let adminRole = await roleRepository.findOne({ name: 'Admin' });
+        let adminRole = await roleRepository.findOne({ name: 'dinesh' });
         const user = new User();
 
         user.username = 'dinesh';

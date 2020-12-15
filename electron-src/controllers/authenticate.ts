@@ -6,12 +6,10 @@ import { verify, print } from '../utils';
 ipcMain.on('authenticate', (event: IpcMainEvent, { username, password }) => {
 
     Settings.getConnection().then(async connection => {
-        console.log(username, password)
+      
         let userRepository = connection.getRepository(User);
 
         let user = await userRepository.findOne({ username: username });
-
-        console.log(user)
 
         if (!user) {
             Settings.sendWebContent('authenticateResponse', 400, 'Invalid username');

@@ -47,21 +47,21 @@ class App extends ReactComponent<any, RootContextType> {
       activeView: defaultHistory[defaultHistory.length - 1],
       history: defaultHistory,
       apiCallsInAction: [],
-      // userInfo: null
+      userInfo: null
 
-      userInfo: {
-        "avatar": 1,
-        "createdAt": "2020-01-24T10:08:10.000Z",
-        "deleted": false,
-        "email": "admin@billdesk.com",
-        "firstName": "Administrator",
-        "id": 2,
-        "lastName": null,
-        "password": "$2b$10$ij7Jc1whEvlAsFcKhwgOzOLz66W2hZqhQeBnBYUisyvRYtxzx6LFK",
-        "phone": null,
-        "updatedAt": "2020-01-24T10:08:10.000Z",
-        "username": "admin"
-      }
+      // userInfo: {
+      //   "avatar": 1,
+      //   "createdAt": "2020-01-24T10:08:10.000Z",
+      //   "deleted": false,
+      //   "email": "admin@billdesk.com",
+      //   "firstName": "Administrator",
+      //   "id": 2,
+      //   "lastName": null,
+      //   "password": "$2b$10$ij7Jc1whEvlAsFcKhwgOzOLz66W2hZqhQeBnBYUisyvRYtxzx6LFK",
+      //   "phone": null,
+      //   "updatedAt": "2020-01-24T10:08:10.000Z",
+      //   "username": "admin"
+      // }
     };
   }
 
@@ -74,6 +74,18 @@ class App extends ReactComponent<any, RootContextType> {
 
   // Navigate to activity
   navigate = (name: string, params: any, title: string, currentState?: any) => {
+
+    if (name === 'Login') {
+      this.setState({
+        userInfo: null,
+        activeView: {
+          name: 'Dashboard',
+          params: {},
+          title: 'Dashboard'
+        }
+      }); return
+    }
+
     let history: HistoryItemType[] = this.state.history;
 
     let activeView: any = this.state.activeView;

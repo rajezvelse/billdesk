@@ -37,7 +37,7 @@ class Login extends ReactComponent<any, {
   }
 
   componentDidMount() {
-super.componentDidMount();
+    super.componentDidMount();
 
 
     if (this.context.preferences['FAV_USER']) {
@@ -99,38 +99,38 @@ super.componentDidMount();
                     isValid,
                     isSubmitting
                   }) => (
-                      <Form noValidate autoComplete="off" onSubmit={handleSubmit}>
-                        <h2>Welcome</h2>
+                    <Form noValidate autoComplete="off" onSubmit={handleSubmit}>
+                      <h2>Welcome</h2>
 
-                        {this.state.favUser &&
-                          <FormControl fullWidth >
-                            <Grid container justify="center" alignItems="center" spacing={10}>
-                              <Grid item sm={3}><ProfileAvatar variant={this.state.favUser.avatar} /></Grid>
-                              <Grid item sm={9}><Typography>{this.state.favUser.firstName}</Typography></Grid>
-                            </Grid>
-                          </FormControl>
-                        }
+                      {this.state.favUser &&
+                        <FormControl fullWidth >
+                          <Grid container justify="center" alignItems="center" spacing={10}>
+                            <Grid item sm={3}><ProfileAvatar variant={this.state.favUser.avatar} /></Grid>
+                            <Grid item sm={9}><Typography>{this.state.favUser.firstName}</Typography></Grid>
+                          </Grid>
+                        </FormControl>
+                      }
 
-                        {!this.state.favUser &&
-                          <FormControl fullWidth variant="outlined">
-                            <Field as={OutlinedInputSmall} name="username" error={touched.username && !!errors.username} placeholder="Username" startAdornment={<InputAdornment position="start"><Face /></InputAdornment>} />
-                            <ErrorMessage name="username" component={ValidationError} />
-                          </FormControl>
-                        }
-
+                      {!this.state.favUser &&
                         <FormControl fullWidth variant="outlined">
-                          <Field as={OutlinedInputSmall} name="password" error={touched.password && !!errors.password} placeholder="Password" type="password" startAdornment={<InputAdornment position="start"><Lock /></InputAdornment>} />
-                          <ErrorMessage name="password" component={ValidationError} />
+                          <Field as={OutlinedInputSmall} name="username" error={touched.username && !!errors.username} placeholder="Username" startAdornment={<InputAdornment position="start"><Face /></InputAdornment>} />
+                          <ErrorMessage name="username" component={ValidationError} />
                         </FormControl>
+                      }
 
-                        <FormControl fullWidth>
-                          <ButtonFullWidth type="submit" disabled={!isValid || isSubmitting} variant="contained" color="primary" disableElevation>Login</ButtonFullWidth>
+                      <FormControl fullWidth variant="outlined">
+                        <Field as={OutlinedInputSmall} name="password" error={touched.password && !!errors.password} placeholder="Password" type="password" startAdornment={<InputAdornment position="start"><Lock /></InputAdornment>} />
+                        <ErrorMessage name="password" component={ValidationError} />
+                      </FormControl>
 
-                          {this.state.loginError && <ValidationError>{this.state.loginError}</ValidationError>}
-                        </FormControl>
+                      <FormControl fullWidth>
+                        <ButtonFullWidth type="submit" disabled={!isValid || isSubmitting} variant="contained" color="primary" disableElevation>Login</ButtonFullWidth>
 
-                      </Form>
-                    )}
+                        {this.state.loginError && <ValidationError>{this.state.loginError}</ValidationError>}
+                      </FormControl>
+
+                    </Form>
+                  )}
                 </Formik>
 
               </Grid>

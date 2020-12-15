@@ -1,7 +1,7 @@
 {
   "name": "billdesk",
   "productName": "BillDesk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Automobile spares billing application",
   "author": "rajezvelse",
   "license": "MIT",
@@ -28,8 +28,8 @@
     "productName": "BillDesk",
     "appId": "org.rajezvelse.BillDesk",
     "files": [
-      "dist/",
-      "node_modules/",
+      "dist/**/*",
+      "node_modules/**/*",
       "index.html",
       "package.json"
     ],
@@ -98,7 +98,9 @@
     "@types/react": "^16.9.43",
     "@types/react-dom": "^16.9.8",
     "@types/recharts": "^1.8.16",
+    "bcrypt": "^5.0.0",
     "date-fns": "^2.16.1",
+    "electron-unhandled": "^3.0.2",
     "formik": "^2.1.5",
     "formik-material-ui": "^2.0.1",
     "loadash": "^1.0.0",

@@ -82,7 +82,14 @@ class Main extends ReactComponent<any, any> {
                       </DropdownMenu>
                     </li>
                     <li>
-                      {userInfo && <ProfileAvatar variant={userInfo.avatar} size="small" outline="light" />}
+                      <DropdownMenu>
+                        {userInfo && <ProfileAvatar variant={userInfo.avatar} size="small" outline="light" />}
+                        <ul>
+                          <li onClick={() => navigate('ChangePassword', {}, 'Change login password')}>Change password</li>
+                          <li onClick={() => navigate('Login', {})}>Logout</li>
+                        </ul>
+                      </DropdownMenu>
+
                     </li>
                   </TopNavTools>
                 </TopNavContainer>
