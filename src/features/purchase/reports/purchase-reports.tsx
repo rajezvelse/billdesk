@@ -60,7 +60,7 @@ class PurchaseReports extends ReactComponent<any, {
         }
       },
       showDateDropdown: false,
-      selectedDateOption: 'today',
+      selectedDateOption: 'this_month',
       productSearchIsOpen: false
     }
   }

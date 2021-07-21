@@ -3,6 +3,7 @@ import ReactComponent from '../../react-component'
 
 import { IpcRendererEvent } from "electron";
 import RootContext from '../../root.context';
+import { IsGranted } from '../../directives';
 
 import { default as NewSalesPaymentDialog } from './new-sales-payment-dialog';
 
@@ -56,7 +57,7 @@ class SaleDetails extends ReactComponent<WithSnackbarProps & { id: number; }, {
   }
 
   componentDidMount() {
-super.componentDidMount();
+    super.componentDidMount();
 
     this.fetchData();
   }
@@ -64,7 +65,7 @@ super.componentDidMount();
   fetchData = () => {
 
     this.context.electronIpc.once("fetchSaleDataResponse", (event: IpcRendererEvent, status: number, response: any) => {
-this.context.setLoading(false);
+      this.context.setLoading(false);
 
       // On fail
       if (status !== 200) {
@@ -77,7 +78,7 @@ this.context.setLoading(false);
     });
 
     this.context.setLoading(true);
-this.context.electronIpc.send("fetchSaleData", { id: this.props.id });
+    this.context.electronIpc.send("fetchSaleData", { id: this.props.id });
   }
 
   onAddNewPaymentDialogClose = (val: any) => {
@@ -150,25 +151,27 @@ this.context.electronIpc.send("fetchSaleData", { id: this.props.id });
                 <SectionTitle gutterBottom variant="h5">
                   Sale details
 
+                  <IsGranted permissions={['delete_sales']}>
                     <Tooltip title="Delete sale" arrow placement="top">
                       <Button onClick={() => this.setState({ showDeleteWarning: true, selectedForDelete: this.state.data.id })} variant="contained" size="small" color="secondary">
                         Delete
                       </Button>
                     </Tooltip>
-                 
-                    <Button onClick={() => navigateBack()} variant="contained" size="small" color="primary">
-                      <DoubleArrowIconBack />
-                      
-                      {(() => {
-                        let prev: any = getPrevHistory();
+                  </IsGranted>
 
-                        if(prev.name === 'NewSale') return 'Back to new sale';
-                        else if (prev.name === 'SalesReports') return 'Back to sales report';
-                        else return '';
-                      })()}
-                    </Button>
+                  <Button onClick={() => navigateBack()} variant="contained" size="small" color="primary">
+                    <DoubleArrowIconBack />
 
-                 </SectionTitle>
+                    {(() => {
+                      let prev: any = getPrevHistory();
+
+                      if (prev.name === 'NewSale') return 'Back to new sale';
+                      else if (prev.name === 'SalesReports') return 'Back to sales report';
+                      else return '';
+                    })()}
+                  </Button>
+
+                </SectionTitle>
 
                 <CardContent >
                   {/* If error while fetching */}
@@ -272,68 +275,73 @@ this.context.electronIpc.send("fetchSaleData", { id: this.props.id });
                     <SectionDivider light />
 
                     <Grid container>
-                      {/* Payment history */}
-                      <Grid item xs={12} md={6}>
 
-                        <Grid container>
-                          <Grid item xs={10}>
-                            <SubSectionTitle gutterBottom variant="h6">
-                              Payment history:
+                      <IsGranted permissions={['view_sales_payments']}>
+                        {/* Payment history */}
+                        <Grid item xs={12} md={6}>
 
-                              {this.state.data.outstandingAmount > 0 &&
-                                <Tooltip title="Add new payment" arrow placement="top">
-                                  <Button onClick={() => this.setState({ openAddNewPaymentDialog: true })} variant="contained" size="small" color="primary">
-                                    <AddIcon />
-                                  </Button>
-                                </Tooltip>
-                              }
-                            </SubSectionTitle>
-                          </Grid>
-                        </Grid>
+                          <Grid container>
+                            <Grid item xs={10}>
+                              <SubSectionTitle gutterBottom variant="h6">
+                                Payment history:
 
-                        <TableContainer>
-
-                          <Table>
-                            <TableHead>
-                              <TableRow>
-                                <TableCell component="th">#</TableCell>
-                                <TableCell component="th">Date</TableCell>
-                                <TableCell component="th">Payment mode</TableCell>
-                                <TableCell component="th">Amount</TableCell>
-                                <NoBorderWhiteTh></NoBorderWhiteTh>
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {this.state.data.payments.map((payment: any, index: number) => (
-                                <TableRow key={uniqueId()}>
-                                  <TableCell>{index + 1}</TableCell>
-                                  <TableCell><FormatDate value={payment.date} /></TableCell>
-                                  <TableCell>{payment.mode}</TableCell>
-                                  <TableCell><Currency value={payment.amount} /></TableCell>
-
-                                  <NoBorderTd>
-                                    <Tooltip title="Delete payment" arrow placement="top">
-                                      <IconButton onClick={() => this.setState({ showPaymentDeleteWarning: true, selectedPaymentForDelete: payment.id })} color="secondary">
-                                        <HighlightOffIcon />
-                                      </IconButton>
+                              <IsGranted permissions={['create_sales_payments']}>
+                                  {this.state.data.outstandingAmount > 0 &&
+                                    <Tooltip title="Add new payment" arrow placement="top">
+                                      <Button onClick={() => this.setState({ openAddNewPaymentDialog: true })} variant="contained" size="small" color="primary">
+                                        <AddIcon />
+                                      </Button>
                                     </Tooltip>
-                                  </NoBorderTd>
+                                  }
+                                </IsGranted>
+                              </SubSectionTitle>
+                            </Grid>
+                          </Grid>
+
+                          <TableContainer>
+
+                            <Table>
+                              <TableHead>
+                                <TableRow>
+                                  <TableCell component="th">#</TableCell>
+                                  <TableCell component="th">Date</TableCell>
+                                  <TableCell component="th">Payment mode</TableCell>
+                                  <TableCell component="th">Amount</TableCell>
+                                  <IsGranted permissions={['delete_sales_payments']}><NoBorderWhiteTh></NoBorderWhiteTh></IsGranted>
                                 </TableRow>
-                              ))}
-                              <TableRow>
-                                <TableCell ></TableCell>
-                                <TableCell ></TableCell>
-                                <TableCell >Total payment</TableCell>
-                                <TableCell ><Currency value={this.state.totalPayment} /></TableCell>
-                                <NoBorderTd></NoBorderTd>
-                              </TableRow>
-                            </TableBody>
-                          </Table>
+                              </TableHead>
+                              <TableBody>
+                                {this.state.data.payments.map((payment: any, index: number) => (
+                                  <TableRow key={uniqueId()}>
+                                    <TableCell>{index + 1}</TableCell>
+                                    <TableCell><FormatDate value={payment.date} /></TableCell>
+                                    <TableCell>{payment.mode}</TableCell>
+                                    <TableCell><Currency value={payment.amount} /></TableCell>
+                                    <IsGranted permissions={['delete_sales_payments']}>
+                                      <NoBorderTd>
+                                        <Tooltip title="Delete payment" arrow placement="top">
+                                          <IconButton onClick={() => this.setState({ showPaymentDeleteWarning: true, selectedPaymentForDelete: payment.id })} color="secondary">
+                                            <HighlightOffIcon />
+                                          </IconButton>
+                                        </Tooltip>
+                                      </NoBorderTd>
+                                    </IsGranted>
+                                  </TableRow>
+                                ))}
+                                <TableRow>
+                                  <TableCell ></TableCell>
+                                  <TableCell ></TableCell>
+                                  <TableCell >Total payment</TableCell>
+                                  <TableCell ><Currency value={this.state.totalPayment} /></TableCell>
+                                  <IsGranted permissions={['delete_sales_payments']}><NoBorderTd></NoBorderTd></IsGranted>
+                                </TableRow>
+                              </TableBody>
+                            </Table>
 
-                        </TableContainer>
+                          </TableContainer>
 
-                      </Grid>
-
+                        </Grid>
+                      </IsGranted>
                       <Grid item xs={12} md={6}>
 
                       </Grid>
@@ -348,7 +356,7 @@ this.context.electronIpc.send("fetchSaleData", { id: this.props.id });
               </Grid>
             </Grid>
 
-            
+
             {/* Delete sale warning   */}
             <StyledModal
               open={this.state.showDeleteWarning}

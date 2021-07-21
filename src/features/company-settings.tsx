@@ -2,6 +2,7 @@ import React from 'react';
 import ReactComponent from '../react-component'
 import { IpcRendererEvent } from "electron";
 import RootContext from '../root.context';
+import { IsGranted } from '../directives';
 
 import {
   SectionTitle, FormControl, Form, ValidationError,
@@ -162,7 +163,9 @@ super.componentDidMount();
                   </DetailRow>
 
                   <FormActions>
+                  <IsGranted permissions={['update_company_settings']}>
                     <Button onClick={this.openForm} type="button" variant="contained" color="primary" size="small">Edit</Button>
+                    </IsGranted>
                   </FormActions>
                 </FormContent>
 

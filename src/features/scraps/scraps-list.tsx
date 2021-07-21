@@ -4,7 +4,7 @@ import { IpcRendererEvent } from "electron"
 import RootContext from '../../root.context'
 import uniqueId from 'lodash/uniqueId';
 
-import { Currency, FormatDate } from '../../directives';
+import { Currency, FormatDate, IsGranted } from '../../directives';
 import {
   CardSectionTitle, ValidationError, TableButtonsContainer,
   StyledModal, WarningModalActions, TableHead, TableFilterGrid,
@@ -209,11 +209,13 @@ class ScrapsList extends ReactComponent<any, {
                         <CardContent>
                           <CardSectionTitle gutterBottom variant="h5">
                             Scraps
-                            <Tooltip title="Add new scraps" arrow placement="top">
-                              <Button onClick={() => navigate('ScrapsAddEdit', {}, 'Mark scraps')} variant="contained" size="small" color="primary">
-                                <AddIcon />
-                              </Button>
-                            </Tooltip>
+                            <IsGranted permissions={['create_scraps']}>
+                              <Tooltip title="Add new scraps" arrow placement="top">
+                                <Button onClick={() => navigate('ScrapsAddEdit', {}, 'Mark scraps')} variant="contained" size="small" color="primary">
+                                  <AddIcon />
+                                </Button>
+                              </Tooltip>
+                            </IsGranted>
                           </CardSectionTitle>
 
                           {/* Filters */}
@@ -355,7 +357,7 @@ class ScrapsList extends ReactComponent<any, {
                                     </TableSortLabel>
                                   </TableCell>
 
-                                  <TableCell component="th"></TableCell>
+                                  <IsGranted permissions={['delete_scraps']}><TableCell component="th"></TableCell></IsGranted>
                                 </TableRow>
                               </TableHead>
                               <TableBody>
@@ -367,15 +369,17 @@ class ScrapsList extends ReactComponent<any, {
                                     <TableCell>{scraps.productName}</TableCell>
                                     <TableCell>{scraps.quantity}</TableCell>
                                     <TableCell><Currency value={scraps.loss} /></TableCell>
-                                    <TableCell>
-                                      <TableButtonsContainer>
-                                        <Tooltip title="Delete scrap entry" arrow placement="top">
-                                          <Button onClick={() => this.setState({ showDeleteWarning: true, selectedForDelete: scraps.id })} variant="contained" size="small" color="secondary">
-                                            Delete
+                                    <IsGranted permissions={['delete_scraps']}>
+                                      <TableCell>
+                                        <TableButtonsContainer>
+                                          <Tooltip title="Delete scrap entry" arrow placement="top">
+                                            <Button onClick={() => this.setState({ showDeleteWarning: true, selectedForDelete: scraps.id })} variant="contained" size="small" color="secondary">
+                                              Delete
                                       </Button>
-                                        </Tooltip>
-                                      </TableButtonsContainer>
-                                    </TableCell>
+                                          </Tooltip>
+                                        </TableButtonsContainer>
+                                      </TableCell>
+                                    </IsGranted>
                                   </TableRow>
                                 ))}
                               </TableBody>

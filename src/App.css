@@ -2,6 +2,10 @@
   background-color: #f5f5f5 !important;
 }
 
+.MuiAutocomplete-option {
+  background-color: 'blue' !important;
+}
+
 /* Snackbar */
 /* div[class*="makeStyles-bottom"] {
   bottom: 50px !important;

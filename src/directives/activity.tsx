@@ -21,25 +21,32 @@ class Activity extends ReactComponent<ActivityProps, any> {
       {
         Feature ?
           <>
-            {'authenticated' in this.props && this.props.authenticated === false ?
-              // Render no auth features
-              <Feature {...this.props.props} prevState={this.props.prevState || undefined} /> :
-
+            {/* Check the Application is locked */}
+            {this.context.locked ?
+              (() => {
+                let Login = this.getFeature('Login');
+                return <Login />
+              })() :
               <>
-                {/* Validate authentication */}
-                {this.isAuthenticated() ?
-                  <Feature {...this.props.props} prevState={this.props.prevState || undefined} />
+                {'authenticated' in this.props && this.props.authenticated === false ?
+                  // Render no auth features
+                  <Feature {...this.props.props} prevState={this.props.prevState || undefined} /> :
 
-                  // Redirect to login if not authenticated
-                  : (() => {
-                    let Login = this.getFeature('Login');
-                    return <Login />
-                  })()
+                  <>
+                    {/* Validate authentication */}
+                    {this.isAuthenticated() ?
+                      <Feature {...this.props.props} prevState={this.props.prevState || undefined} />
+
+                      // Redirect to login if not authenticated
+                      : (() => {
+                        let Login = this.getFeature('Login');
+                        return <Login />
+                      })()
+                    }
+                  </>
+
                 }
-              </>
-
-            }
-
+              </>}
           </>
 
           : <InfoError>Not found</InfoError>

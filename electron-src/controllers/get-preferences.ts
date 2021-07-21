@@ -1,6 +1,7 @@
 import { ipcMain, BrowserWindow, IpcMainEvent } from 'electron';
 import { Settings } from '../settings';
 import { Preferences, User } from '../entity';
+import { print } from '../utils';
 
 ipcMain.on('getPreferences', (event: IpcMainEvent) => {
 

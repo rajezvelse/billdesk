@@ -15,7 +15,7 @@ import {
 
 } from '@material-ui/core';
 
-import { Currency, FormatDate } from '../../../directives';
+import { Currency, FormatDate, IsGranted } from '../../../directives';
 
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 
@@ -209,7 +209,7 @@ class PurchaseReportsRecords extends ReactComponent<WithSnackbarProps & {
                                       this.handleSorting('vendorName')
                                     }}
                                   ><strong>Vendor</strong></TableSortLabel></TableCell>
-                                
+
                                 <TableCell component="th">
                                   <TableSortLabel
                                     active={this.state.orderBy === 'totalDiscountedCost'}
@@ -254,11 +254,13 @@ class PurchaseReportsRecords extends ReactComponent<WithSnackbarProps & {
                                           View
                                     </Button>
                                       </Tooltip>
-                                      <Tooltip title="Delete purchase" arrow placement="top">
-                                        <Button onClick={() => this.setState({ showDeleteWarning: true, selectedForDelete: purchase.id })} variant="contained" size="small" color="secondary">
-                                          Delete
+                                      <IsGranted permissions={['delete_purchase']}>
+                                        <Tooltip title="Delete purchase" arrow placement="top">
+                                          <Button onClick={() => this.setState({ showDeleteWarning: true, selectedForDelete: purchase.id })} variant="contained" size="small" color="secondary">
+                                            Delete
                                     </Button>
-                                      </Tooltip>
+                                        </Tooltip>
+                                      </IsGranted>
                                     </TableButtonsContainer>
                                   </TableCell>
                                 </TableRow>

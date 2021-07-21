@@ -9,12 +9,12 @@ export const ParticularsTable = styled.table`
   & th {
     padding: 10px 15px;
     text-align: center;
-    border: 1px dashed ${props => props.theme.palette.grey['300']};
+    border: 1px dashed ${props => props.theme.palette.grey['500']};
     font-size: ${props => props.theme.typography.body2.fontSize};
   }
   & td {
     padding: 10px 15px;
-    border: 1px dashed ${props => props.theme.palette.grey['300']};
+    border: 1px dashed ${props => props.theme.palette.grey['500']};
     font-size: ${props => props.theme.typography.body2.fontSize};
   }
 `;

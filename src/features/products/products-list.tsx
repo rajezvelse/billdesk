@@ -2,6 +2,7 @@ import React from 'react'
 import ReactComponent from '../../react-component'
 import { IpcRendererEvent } from "electron"
 import RootContext from '../../root.context'
+import { IsGranted } from '../../directives';
 import uniqueId from 'lodash/uniqueId';
 
 import { Currency } from '../../directives';
@@ -65,7 +66,7 @@ class ProductsList extends ReactComponent<any, {
   }
 
   componentDidMount() {
-super.componentDidMount();
+    super.componentDidMount();
 
     this.fetchData()
     this.loadFormData()
@@ -183,11 +184,13 @@ super.componentDidMount();
                         <CardContent>
                           <CardSectionTitle gutterBottom variant="h5">
                             Products
-                          <Tooltip title="Add new product" arrow placement="top">
-                              <Button onClick={() => navigate('ProductAddEdit', {}, 'Add new product')} variant="contained" size="small" color="primary">
-                                <AddIcon />
-                              </Button>
-                            </Tooltip>
+                            <IsGranted permissions={['create_products']}>
+                              <Tooltip title="Add new product" arrow placement="top">
+                                <Button onClick={() => navigate('ProductAddEdit', {}, 'Add new product')} variant="contained" size="small" color="primary">
+                                  <AddIcon />
+                                </Button>
+                              </Tooltip>
+                            </IsGranted>
                           </CardSectionTitle>
 
                           {/* Filters */}
@@ -292,7 +295,9 @@ super.componentDidMount();
                                         this.handleSorting('categoryName')
                                       }}
                                     ><strong>Category</strong></TableSortLabel></TableCell>
-                                  <TableCell component="th"></TableCell>
+                                  <IsGranted permissions={['update_products', 'delete_products']} anyOne={true}>
+                                    <TableCell component="th"></TableCell>
+                                  </IsGranted>
                                 </TableRow>
                               </TableHead>
                               <TableBody>
@@ -302,20 +307,26 @@ super.componentDidMount();
                                     <TableCell>{product.name}</TableCell>
                                     <TableCell><Currency value={product.price} /></TableCell>
                                     <TableCell>{product.categoryName || '-'}</TableCell>
-                                    <TableCell>
-                                      <TableButtonsContainer>
-                                        <Tooltip title="Edit product details" arrow placement="top">
-                                          <Button onClick={() => navigate('ProductAddEdit', { selectedForEdit: product }, 'Edit product details')} variant="contained" size="small" color="primary">
-                                            Edit
-                                      </Button>
-                                        </Tooltip>
-                                        <Tooltip title="Delete product" arrow placement="top">
-                                          <Button onClick={() => this.setState({ showDeleteWarning: true, selectedForDelete: product.id })} variant="contained" size="small" color="secondary">
-                                            Delete
-                                      </Button>
-                                        </Tooltip>
-                                      </TableButtonsContainer>
-                                    </TableCell>
+                                    <IsGranted permissions={['update_products', 'delete_products']} anyOne={true}>
+                                      <TableCell>
+                                        <TableButtonsContainer>
+                                          <IsGranted permissions={['update_products']} >
+                                            <Tooltip title="Edit product details" arrow placement="top">
+                                              <Button onClick={() => navigate('ProductAddEdit', { selectedForEdit: product }, 'Edit product details')} variant="contained" size="small" color="primary">
+                                                Edit
+                                              </Button>
+                                            </Tooltip>
+                                          </IsGranted>
+                                          <IsGranted permissions={['delete_products']} >
+                                            <Tooltip title="Delete product" arrow placement="top">
+                                              <Button onClick={() => this.setState({ showDeleteWarning: true, selectedForDelete: product.id })} variant="contained" size="small" color="secondary">
+                                                Delete
+                                              </Button>
+                                            </Tooltip>
+                                          </IsGranted>
+                                        </TableButtonsContainer>
+                                      </TableCell>
+                                    </IsGranted>
                                   </TableRow>
                                 ))}
                               </TableBody>

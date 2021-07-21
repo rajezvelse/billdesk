@@ -7,7 +7,8 @@ export interface RootContextType {
   navigate: Function;
   getPrevHistory: Function;
   navigateBack: Function;
-	electronIpc: IpcRenderer | null;
+  electronIpc: IpcRenderer | null;
+  locked: boolean;
 	preferences?: { [s: string]: any };
   userInfo: { [s: string]: any } | null;
   activeView: { name: string; params: any; title: string; prevState?: any; }

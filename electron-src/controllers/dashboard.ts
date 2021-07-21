@@ -1,7 +1,7 @@
 import { ipcMain, IpcMainEvent, BrowserWindow } from 'electron';
 import { Settings } from '../settings';
 import { Sales, SalesParticulars, SalesPayment, Scraps, Purchase, Expense, PurchasePayment } from '../entity';
-import { Like, Brackets } from 'typeorm';
+import { print } from '../utils';
 import * as moment from 'moment';
 
 // Fetch sales reports metrics data

@@ -1,7 +1,11 @@
 import React from "react";
 import ReactComponent from '../react-component';
 import { IpcRendererEvent } from "electron";
-import { ImagedBackgroundDark, GridCenter, FormControl, ButtonFullWidth, OutlinedInputSmall, Form, CardLogin, LoginLogo, ValidationError, ProfileAvatar } from '../styled-components';
+import { 
+  ImagedBackgroundDark, GridCenter, FormControl, ButtonFullWidth, 
+  OutlinedInputSmall, Form, CardLogin, LoginLogo, ValidationError, 
+  ProfileAvatar, LoginOptionLink
+ } from '../styled-components';
 import { Grid, InputAdornment, Typography } from '@material-ui/core';
 import { Face, Lock } from '@material-ui/icons';
 import * as Yup from 'yup';
@@ -60,7 +64,17 @@ class Login extends ReactComponent<any, {
       }
 
       // On success
-      this.context.setValue({ userInfo: response });
+      this.context.setValue({ userInfo: response, locked: false });
+
+      // Refresh preferences
+      this.context.electronIpc.on("getPreferencesResponse", (event: IpcRendererEvent, status: number, response: any) => {
+
+        if (status === 200) {
+          this.context.setValue({ preferences: response });
+        }
+      });
+
+      this.context.electronIpc.send("getPreferences");
 
     });
 
@@ -70,7 +84,7 @@ class Login extends ReactComponent<any, {
   }
 
   render() {
-    console.log(this.state)
+    
     return <ImagedBackgroundDark>
       <GridCenter>
         <Grid item xs={10} sm={9} md={6} lg={6}>
@@ -125,6 +139,15 @@ class Login extends ReactComponent<any, {
 
                       <FormControl fullWidth>
                         <ButtonFullWidth type="submit" disabled={!isValid || isSubmitting} variant="contained" color="primary" disableElevation>Login</ButtonFullWidth>
+
+                        {this.state.favUser && !this.context.locked && <LoginOptionLink href="#" variant="body2" onClick={() => this.setState({
+                          loginError: null,
+                          favUser: null,
+                          formValues: {
+                            username: '',
+                            password: ''
+                          }
+                        })}>Login as different user</LoginOptionLink> }
 
                         {this.state.loginError && <ValidationError>{this.state.loginError}</ValidationError>}
                       </FormControl>

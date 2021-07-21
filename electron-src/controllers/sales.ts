@@ -3,6 +3,7 @@ import { Settings } from '../settings';
 import { Product, Customer, Sales, SalesParticulars, SalesPayment, ProductCategory, Brand, ProductStocks } from '../entity';
 import { Brackets, MoreThan, In } from 'typeorm';
 import { generateRecordNumber } from '../utils';
+import { print } from '../utils';
 
 ipcMain.on('getSalesFormData', (event: IpcMainEvent) => {
 

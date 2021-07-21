@@ -71,7 +71,7 @@ export const AvatarOutliner = styled.div`
 export const CardSectionTitle = styled(Typography)`
   margin: -16px -16px 15px -16px;
   padding: 16px;
-  background-color: ${props => props.theme.palette.grey['100']};
+  background-color: ${props => props.theme.palette.grey['300']};
   
 
   button {
@@ -83,7 +83,7 @@ export const CardSectionTitle = styled(Typography)`
 export const SectionTitle = styled(Typography)`
 margin-bottom: 15px;
 padding-bottom: 15px;
-border-bottom: 1px solid ${props => props.theme.palette.grey['200']};
+border-bottom: 1px solid ${props => props.theme.palette.grey['300']};
 
 button {
   float: right;

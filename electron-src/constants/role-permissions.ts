@@ -1,4 +1,18 @@
 export const RolePermissions: { [groupName: string]: string[] } = {
     Users: ['create_users', 'update_users', 'view_users', 'delete_users'],
-    Roles: ['create_roles', 'update_roles', 'view_roles', 'delete_roles']
+    Roles: ['create_roles', 'update_roles', 'view_roles', 'delete_roles'],
+    CompanySettings: ['create_company_settings', 'update_company_settings', 'view_company_settings', 'delete_company_settings'],
+    Vendors: ['create_vendors', 'update_vendors', 'view_vendors', 'delete_vendors'],
+    Products: ['create_products', 'update_products', 'view_products', 'delete_products'],
+    ProductCategories: ['create_product_categories', 'update_product_categories', 'view_product_categories', 'delete_product_categories'],
+    Brands: ['create_brands', 'update_brands', 'view_brands', 'delete_brands'],
+    ExpenseCategories: ['create_expense_categories', 'update_expense_categories', 'view_expense_categories', 'delete_expense_categories'],
+    Customers: ['create_customers', 'update_customers', 'view_customers', 'delete_customers'],
+    Sales: ['create_sales', 'update_sales', 'view_sales', 'delete_sales'],
+    SalesPayments: ['create_sales_payments', 'update_sales_payments', 'view_sales_payments', 'delete_sales_payments'],
+    Expenses: ['create_expenses', 'update_expenses', 'view_expenses', 'delete_expenses'],
+    Purchase: ['create_purchase', 'update_purchase', 'view_purchase', 'delete_purchase'],
+    PurchasePayments: ['create_purchase_payments', 'update_purchase_payments', 'view_purchase_payments', 'delete_purchase_payments'],
+    Stocks: ['create_stocks', 'update_stocks', 'view_stocks', 'delete_stocks'],
+    Scraps: ['create_scraps', 'update_scraps', 'view_scraps', 'delete_scraps'],
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactComponent from '../react-component';
 import RootContext from '../root.context';
-import { Activity } from "../directives";
+import { Activity, IsGranted } from "../directives";
 
 import {
   PageHeader, PageHeaderTitle, PageContainer, Footer, ImagedBackgroundDark, MainContentWrapper,
@@ -29,7 +29,7 @@ class Main extends ReactComponent<any, any> {
 
   // Lock the application
   lock = () => {
-    this.context.setValue({ userInfo: undefined });
+    this.context.setValue({ locked: true });
   }
 
   render() {
@@ -47,9 +47,9 @@ class Main extends ReactComponent<any, any> {
                   <TopNavLogo><img src={mainLogo} alt="" /></TopNavLogo>
                   <TopNav>
                     <TopNavItem onClick={() => navigate('Dashboard', {}, 'Dashboard')} className={activeView.name === 'Dashboard' ? 'active' : ''}>Dashboard</TopNavItem>
-                    <TopNavItem onClick={() => navigate('NewPurchase', {}, 'New Purchase')} className={['NewPurchase', 'PurchaseDetails', 'PurchaseReports', 'Stocks'].indexOf(activeView.name) >= 0 ? 'active' : ''}>Purchase</TopNavItem>
-                    <TopNavItem onClick={() => navigate('NewSale', {}, 'New Sale')} className={['NewSale', 'SaleDetails', 'SalesReports', 'Customers'].indexOf(activeView.name) >= 0 ? 'active' : ''}>Sales</TopNavItem>
-                    <TopNavItem onClick={() => navigate('ExpensesList', {}, 'Expenses')} className={activeView.name === 'ExpenseList' ? 'active' : ''}>Expenses</TopNavItem>
+                    <IsGranted permissions={['view_purchase', 'view_stocks', 'view_scraps']} anyOne={true}> <TopNavItem onClick={() => navigate('NewPurchase', {}, 'New Purchase')} className={['NewPurchase', 'PurchaseDetails', 'PurchaseReports', 'Stocks'].indexOf(activeView.name) >= 0 ? 'active' : ''}>Purchase</TopNavItem></IsGranted>
+                    <IsGranted permissions={['view_sales', 'view_customers']} anyOne={true}> <TopNavItem onClick={() => navigate('NewSale', {}, 'New Sale')} className={['NewSale', 'SaleDetails', 'SalesReports', 'Customers'].indexOf(activeView.name) >= 0 ? 'active' : ''}>Sales</TopNavItem></IsGranted>
+                    <IsGranted permissions={['view_expenses']}> <TopNavItem onClick={() => navigate('ExpensesList', {}, 'Expenses')} className={activeView.name === 'ExpenseList' ? 'active' : ''}>Expenses</TopNavItem></IsGranted>
                   </TopNav>
 
                   <TopNavTools>
@@ -72,12 +72,13 @@ class Main extends ReactComponent<any, any> {
                         </TooltipLight>
 
                         <ul>
-                          <li onClick={() => navigate('Vendors', {}, 'Vendors')}>Vendors</li>
-                          <li onClick={() => navigate('ProductsList', {}, 'Products')}>Products</li>
-                          <li onClick={() => navigate('ProductCategories', {}, 'Product Categories')}>Product Categories</li>
-                          <li onClick={() => navigate('Brands', {}, 'Vehicle Models')}>Vehicle Models</li>
-                          <li onClick={() => navigate('ExpenseCategories', {}, 'Expense Categories')}>Expense Categories</li>
-                          <li onClick={() => navigate('CompanySettings', {}, 'Settings')}>Settings</li>
+                          <IsGranted permissions={['view_vendors']} ><li onClick={() => navigate('Vendors', {}, 'Vendors')}>Vendors</li></IsGranted>
+                          <IsGranted permissions={['view_products']} ><li onClick={() => navigate('ProductsList', {}, 'Products')}>Products</li></IsGranted>
+                          <IsGranted permissions={['view_product_categories']} ><li onClick={() => navigate('ProductCategories', {}, 'Product Categories')}>Product Categories</li></IsGranted>
+                          <IsGranted permissions={['view_brands']} ><li onClick={() => navigate('Brands', {}, 'Vehicle Models')}>Vehicle Models</li></IsGranted>
+                          <IsGranted permissions={['view_expense_categories']} ><li onClick={() => navigate('ExpenseCategories', {}, 'Expense Categories')}>Expense Categories</li></IsGranted>
+                          <IsGranted permissions={['view_users']} ><li onClick={() => navigate('Users', {}, 'Users')}>Users</li></IsGranted>
+                          <IsGranted permissions={['view_company_settings']} ><li onClick={() => navigate('CompanySettings', {}, 'Settings')}>Settings</li></IsGranted>
                         </ul>
                       </DropdownMenu>
                     </li>

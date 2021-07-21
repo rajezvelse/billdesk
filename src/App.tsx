@@ -44,6 +44,7 @@ class App extends ReactComponent<any, RootContextType> {
       setLoading: this.setLoading,
       isLoading: this.isLoading,
       electronIpc: electronIpc,
+      locked: true,
       activeView: defaultHistory[defaultHistory.length - 1],
       history: defaultHistory,
       apiCallsInAction: [],

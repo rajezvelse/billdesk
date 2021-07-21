@@ -3,7 +3,7 @@ import ReactComponent from '../react-component';
 
 import { IpcRendererEvent } from "electron";
 import RootContext from '../root.context';
-import { Currency, DatewiseChart } from '../directives';
+import { Currency, DatewiseChart, IsGranted } from '../directives';
 import { formatDate } from '../utils';
 
 import {
@@ -133,154 +133,180 @@ class Dashboard extends ReactComponent<any, {
                     />
                   </DateRangeContainer>
 
+
                   {/* Summary */}
-                  <ReportChartTitleSpaced>{`Purchase/Sales Summary - `}
-                    <Button size="small" onClick={() => this.setState({ showDateDropdown: !this.state.showDateDropdown })}>
-                      {`${this.state.filters.date.label !== 'Custom date range' && this.state.filters.date.label} (${formatDate(this.state.filters.date.startDate)} -  ${formatDate(this.state.filters.date.endDate)})`}
-                      <ArrowDropDownIcon />
-                    </Button>
-                  </ReportChartTitleSpaced>
-                  <Grid container justify="center" spacing={8}>
+                  <IsGranted permissions={['view_purchase', 'view_sales', 'view_scraps']} anyOne={true}>
+                    <ReportChartTitleSpaced>
+                      <IsGranted permissions={['view_purchase']}>Purchase</IsGranted>
+                      <IsGranted permissions={['view_purchase', 'view_sales']}>/</IsGranted>
+                      <IsGranted permissions={['view_sales']}>Sales</IsGranted> {` Summary - `}
+                      <Button size="small" onClick={() => this.setState({ showDateDropdown: !this.state.showDateDropdown })}>
+                        {`${this.state.filters.date.label !== 'Custom date range' && this.state.filters.date.label} (${formatDate(this.state.filters.date.startDate)} -  ${formatDate(this.state.filters.date.endDate)})`}
+                        <ArrowDropDownIcon />
+                      </Button>
+                    </ReportChartTitleSpaced>
+                    <Grid container justify="center" spacing={8}>
 
-                    <Grid item xs={12} md={3}>
-                      <ReportCardInfoBlue>
-                        <CardContent>
-                          <h5><Currency value={this.state.summary.totalSales} /></h5>
-                          <p>Total sales</p>
-                          <ViewMoreButton variant='text'
-                            onClick={() => {
-                              this.context.navigate('SalesReports', {},'Sales report');
-                            }}
-                          >
-                            View detailed sales report
+                      <IsGranted permissions={['view_sales']}>
+                        <Grid item xs={12} md={3}>
+
+                          <ReportCardInfoBlue>
+                            <CardContent>
+                              <h5><Currency value={this.state.summary.totalSales} /></h5>
+                              <p>Total sales</p>
+                              <ViewMoreButton variant='text'
+                                onClick={() => {
+                                  this.context.navigate('SalesReports', {}, 'Sales report');
+                                }}
+                              >
+                                View detailed sales report
                           </ViewMoreButton>
-                        </CardContent>
-                      </ReportCardInfoBlue>
+                            </CardContent>
+                          </ReportCardInfoBlue>
+                        </Grid>
+                      </IsGranted>
+
+                      <IsGranted permissions={['view_purchase']}>
+                        <Grid item xs={12} md={3}>
+                          <ReportCardBlue>
+                            <CardContent>
+                              <h5><Currency value={this.state.summary.totalPurchase} /></h5>
+                              <p>Total purchase</p>
+                              <ViewMoreButton variant='text'
+                                onClick={() => {
+                                  this.context.navigate('PurchaseReports', {}, 'Purchase report');
+                                }}
+                              >
+                                View detailed purchase report
+                          </ViewMoreButton>
+                            </CardContent>
+                          </ReportCardBlue>
+                        </Grid>
+                      </IsGranted>
+
+
+                      <IsGranted permissions={['view_purchase', 'view_sales']}>
+                        <Grid item xs={12} md={3}>
+                          <ReportCardGreen>
+                            <CardContent>
+                              <h5><Currency value={this.state.summary.totalProfitUnrealized} /></h5>
+                              <p>Profit/Loss  - unrealized</p>
+                              <ViewMoreButton variant='text'
+                                onClick={() => {
+                                  this.context.navigate('ProductWiseProfit', {}, 'Productwise Profit/Loss');
+                                }}
+                              >
+                                View productwise profit/loss
+                          </ViewMoreButton>
+                            </CardContent>
+                          </ReportCardGreen>
+                        </Grid>
+                      </IsGranted>
+
+                      <IsGranted permissions={['view_scraps']}>
+                        <Grid item xs={12} md={3}>
+                          <ReportCardPink>
+                            <CardContent>
+                              <h5><Currency value={this.state.summary.totalScrapLoss} /></h5>
+                              <p>Total scrap losses</p>
+                              <ViewMoreButton variant='text'
+                                onClick={() => {
+                                  this.context.navigate('ScrapsList', {}, 'Scraps');
+                                }}
+                              >
+                                View all scrap records
+                          </ViewMoreButton>
+                            </CardContent>
+                          </ReportCardPink>
+                        </Grid>
+                      </IsGranted>
                     </Grid>
 
-                    <Grid item xs={12} md={3}>
-                      <ReportCardBlue>
-                        <CardContent>
-                          <h5><Currency value={this.state.summary.totalPurchase} /></h5>
-                          <p>Total purchase</p>
-                          <ViewMoreButton variant='text'
-                            onClick={() => {
-                              this.context.navigate('PurchaseReports', {}, 'Purchase report');
-                            }}
-                          >
-                            View detailed purchase report
-                          </ViewMoreButton>
-                        </CardContent>
-                      </ReportCardBlue>
-                    </Grid>
-
-
-
-                    <Grid item xs={12} md={3}>
-                      <ReportCardGreen>
-                        <CardContent>
-                          <h5><Currency value={this.state.summary.totalProfitUnrealized} /></h5>
-                          <p>Profit/Loss  - unrealized</p>
-                          <ViewMoreButton variant='text'
-                            onClick={() => {
-                              this.context.navigate('ProductWiseProfit', {}, 'Productwise Profit/Loss');
-                            }}
-                          >
-                            View productwise profit/loss
-                          </ViewMoreButton>
-                        </CardContent>
-                      </ReportCardGreen>
-                    </Grid>
-
-                    <Grid item xs={12} md={3}>
-                        <ReportCardPink>
-                          <CardContent>
-                            <h5><Currency value={this.state.summary.totalScrapLoss} /></h5>
-                            <p>Total scrap losses</p>
-                            <ViewMoreButton variant='text'
-                            onClick={() => {
-                              this.context.navigate('ScrapsList', {}, 'Scraps');
-                            }}
-                          >
-                            View all scrap records
-                          </ViewMoreButton>
-                          </CardContent>
-                        </ReportCardPink>
-                      </Grid>
-                  </Grid>
-
-                  <ReportDivider/>
+                    <ReportDivider />
+                  </IsGranted>
 
                   {/* Cashflow summary */}
-                  <ReportChartTitleSpaced>{`Cashflow Summary - `}
-                    <Button size="small" onClick={() => this.setState({ showDateDropdown: !this.state.showDateDropdown })}>
-                      {`${this.state.filters.date.label !== 'Custom date range' && this.state.filters.date.label} (${formatDate(this.state.filters.date.startDate)} -  ${formatDate(this.state.filters.date.endDate)})`}
-                      <ArrowDropDownIcon />
-                    </Button>
-                  </ReportChartTitleSpaced>
-                  <Grid container justify="center" spacing={8}>
+                  <IsGranted permissions={['view_purchase', 'view_sales', 'view_scraps']} anyOne={true}>
+                    <ReportChartTitleSpaced>{`Cashflow Summary - `}
+                      <Button size="small" onClick={() => this.setState({ showDateDropdown: !this.state.showDateDropdown })}>
+                        {`${this.state.filters.date.label !== 'Custom date range' && this.state.filters.date.label} (${formatDate(this.state.filters.date.startDate)} -  ${formatDate(this.state.filters.date.endDate)})`}
+                        <ArrowDropDownIcon />
+                      </Button>
+                    </ReportChartTitleSpaced>
+                    <Grid container justify="center" spacing={8}>
 
-                    <Grid item xs={12} md={3}>
-                      <ReportCardInfoBlue>
-                        <CardContent>
-                          <h5><Currency value={this.state.summary.totalSalesPayment} /></h5>
-                          <p>Total sales inwards</p>
-                          <ViewMoreButton variant='text'
-                            onClick={() => {
-                              this.context.navigate('SalesReports', {}, 'Sales report');
-                            }}
-                          >
-                            View detailed sales report
+                      <IsGranted permissions={['view_sales']}>
+                        <Grid item xs={12} md={3}>
+                          <ReportCardInfoBlue>
+                            <CardContent>
+                              <h5><Currency value={this.state.summary.totalSalesPayment} /></h5>
+                              <p>Total sales inwards</p>
+                              <ViewMoreButton variant='text'
+                                onClick={() => {
+                                  this.context.navigate('SalesReports', {}, 'Sales report');
+                                }}
+                              >
+                                View detailed sales report
                           </ViewMoreButton>
-                        </CardContent>
-                      </ReportCardInfoBlue>
-                    </Grid>
+                            </CardContent>
+                          </ReportCardInfoBlue>
+                        </Grid>
+                      </IsGranted>
 
-                    <Grid item xs={12} md={3}>
-                      <ReportCardBlue>
-                        <CardContent>
-                          <h5><Currency value={this.state.summary.totalPurchasePayment} /></h5>
-                          <p>Total purchase payments</p>
-                          <ViewMoreButton variant='text'
-                            onClick={() => {
-                              this.context.navigate('PurchaseReports', {}, 'Purchase report');
-                            }}
-                          >
-                            View detailed purchase report
+                      <IsGranted permissions={['view_purchase']}>
+                        <Grid item xs={12} md={3}>
+                          <ReportCardBlue>
+                            <CardContent>
+                              <h5><Currency value={this.state.summary.totalPurchasePayment} /></h5>
+                              <p>Total purchase payments</p>
+                              <ViewMoreButton variant='text'
+                                onClick={() => {
+                                  this.context.navigate('PurchaseReports', {}, 'Purchase report');
+                                }}
+                              >
+                                View detailed purchase report
                           </ViewMoreButton>
-                        </CardContent>
-                      </ReportCardBlue>
-                    </Grid>
+                            </CardContent>
+                          </ReportCardBlue>
+                        </Grid>
+                      </IsGranted>
 
-                    <Grid item xs={12} md={3}>
-                      <ReportCardPink>
-                        <CardContent>
-                          <h5><Currency value={this.state.summary.totalExpense} /></h5>
-                          <p>Total expenses</p>
-                          <ViewMoreButton variant='text'
-                            onClick={() => {
-                              this.context.navigate('ExpensesList', {}, 'Expenses');
-                            }}
-                          >
-                            View detailed expense report
+                      <IsGranted permissions={['view_expenses']}>
+                        <Grid item xs={12} md={3}>
+                          <ReportCardPink>
+                            <CardContent>
+                              <h5><Currency value={this.state.summary.totalExpense} /></h5>
+                              <p>Total expenses</p>
+                              <ViewMoreButton variant='text'
+                                onClick={() => {
+                                  this.context.navigate('ExpensesList', {}, 'Expenses');
+                                }}
+                              >
+                                View detailed expense report
                           </ViewMoreButton>
-                        </CardContent>
-                      </ReportCardPink>
-                    </Grid>
+                            </CardContent>
+                          </ReportCardPink>
+                        </Grid>
+                      </IsGranted>
 
-                    <Grid item xs={12} md={3}>
-                      <ReportCardGreen>
-                        <CardContent>
-                          <h5><Currency value={this.state.summary.totalSalesPayment - (this.state.summary.totalPurchasePayment + this.state.summary.totalExpense)} /></h5>
-                          <p>Total cash in hand</p>
-                        </CardContent>
-                      </ReportCardGreen>
+                      <IsGranted permissions={['view_purchase', 'view_sales', 'view_scraps', 'view_expenses']}>
+                        <Grid item xs={12} md={3}>
+                          <ReportCardGreen>
+                            <CardContent>
+                              <h5><Currency value={this.state.summary.totalSalesPayment - (this.state.summary.totalPurchasePayment + this.state.summary.totalExpense)} /></h5>
+                              <p>Total cash in hand</p>
+                            </CardContent>
+                          </ReportCardGreen>
+                        </Grid>
+                      </IsGranted>
                     </Grid>
-                  </Grid>
+                  </IsGranted>
 
-                  {this.state.summary.dateWiseSalesProfitSummary && <>
-                    <DatewiseChart title={`Sales-Profit Trend ${formatDate(this.state.filters.date.startDate)} -  ${formatDate(this.state.filters.date.endDate)}`} data={this.state.summary.dateWiseSalesProfitSummary} dataKeys={{ sales: 'totalSales', profit: 'totalProfit' }} />
-                  </>}
+                  <IsGranted permissions={['view_purchase', 'view_sales', 'view_scraps', 'view_expenses']}>
+                    {this.state.summary.dateWiseSalesProfitSummary && <>
+                      <DatewiseChart title={`Sales-Profit Trend ${formatDate(this.state.filters.date.startDate)} -  ${formatDate(this.state.filters.date.endDate)}`} data={this.state.summary.dateWiseSalesProfitSummary} dataKeys={{ sales: 'totalSales', profit: 'totalProfit' }} />
+                    </>}
+                  </IsGranted>
                 </ReportChartCard>
               }
             </div>

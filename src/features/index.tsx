@@ -12,3 +12,4 @@ export { default as ExpenseCategories } from './expense-categories';
 export * from './expense';
 export * from './scraps';
 export * from './profile';
+export { default as Users } from './users';

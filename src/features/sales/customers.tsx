@@ -3,6 +3,7 @@ import ReactComponent from '../../react-component'
 
 import { IpcRendererEvent } from "electron";
 import RootContext from '../../root.context';
+import { IsGranted } from '../../directives';
 
 import uniqueId from 'lodash/uniqueId';
 import {
@@ -60,7 +61,7 @@ class Customers extends ReactComponent<any, {
 
 
   componentDidMount() {
-super.componentDidMount();
+    super.componentDidMount();
 
     // Load product categories list  
     if (this.context.electronIpc) this.fetchCustomers();
@@ -240,11 +241,13 @@ super.componentDidMount();
             <CardContent>
               <CardSectionTitle gutterBottom variant="h5">
                 Customers
-                <Tooltip title="Add new brand" arrow placement="top">
-                  <Button onClick={this.openAddForm} variant="contained" size="small" color="primary">
-                    <AddIcon />
-                  </Button>
-                </Tooltip>
+                <IsGranted permissions={['create_customers']}>
+                  <Tooltip title="Add new brand" arrow placement="top">
+                    <Button onClick={this.openAddForm} variant="contained" size="small" color="primary">
+                      <AddIcon />
+                    </Button>
+                  </Tooltip>
+                </IsGranted>
               </CardSectionTitle>
               <ScrollWrapper >
                 <ItemsList>
@@ -283,74 +286,80 @@ super.componentDidMount();
 
         {/* View/Add/Edit section */}
         <Grid item xs={4}>
-          {this.state.mode === 'VIEW' && <CardContent>
-            <SectionTitle gutterBottom variant="h5">Customer details</SectionTitle>
 
-            <FormContent>
-              <DetailRow>
-                <DetailLabel xs={5}>Customer name</DetailLabel>
-                <DetailValue xs={7}>{this.state.selectedCustomer.name}</DetailValue>
-              </DetailRow>
+          <IsGranted permissions={['view_customers']}>
+            {this.state.mode === 'VIEW' && <CardContent>
+              <SectionTitle gutterBottom variant="h5">Customer details</SectionTitle>
 
-              <DetailRow>
-                <DetailLabel xs={5}>Customer phone</DetailLabel>
-                <DetailValue xs={7}>{this.state.selectedCustomer.phone? this.state.selectedCustomer.phone: '-'}</DetailValue>
-              </DetailRow>
+              <FormContent>
+                <DetailRow>
+                  <DetailLabel xs={5}>Customer name</DetailLabel>
+                  <DetailValue xs={7}>{this.state.selectedCustomer.name}</DetailValue>
+                </DetailRow>
 
-              <FormActions>
-                <Button onClick={this.selectForEdit} type="button" variant="contained" color="primary" size="small">Edit</Button>
-                <Button onClick={() => this.setState({ showDeleteWarning: true, saveError: null })} type="button" variant="contained" color="secondary" size="small">Delete</Button>
-              </FormActions>
-            </FormContent>
+                <DetailRow>
+                  <DetailLabel xs={5}>Customer phone</DetailLabel>
+                  <DetailValue xs={7}>{this.state.selectedCustomer.phone ? this.state.selectedCustomer.phone : '-'}</DetailValue>
+                </DetailRow>
 
-          </CardContent>}
+                <FormActions>
 
-          {(this.state.mode === 'ADD' || this.state.mode === 'EDIT') && <Card elevation={0}>
-            <CardContent>
-              <Formik initialValues={{ ...this.state.formValues }}
-                validationSchema={this.validationSchema}
-                validateOnMount={true}
-                enableReinitialize={true}
-                onSubmit={(values, { setSubmitting }) => {
-                  this.save(values).then(val => { }).catch(err => setSubmitting(false));
-                }}>
-                {({
-                  handleSubmit,
-                  touched,
-                  errors,
-                  isValid,
-                  isSubmitting
-                }) => <Form noValidate autoComplete="off" onSubmit={handleSubmit}>
-                    <SectionTitle gutterBottom variant="h5">{this.state.mode === 'EDIT' ? 'Update customer' : 'Add new customer'}</SectionTitle>
-                    <FormContent>
-                      <div>
-                        <FormControl fullWidth>
-                          <Field as={TextField} name="name" label="Customer name" type="text" required variant="outlined" size="small" error={touched.name && !!errors.name} />
-                          <ErrorMessage name="name" component={ValidationError} />
-                        </FormControl>
+                  <IsGranted permissions={['update_customers']}><Button onClick={this.selectForEdit} type="button" variant="contained" color="primary" size="small">Edit</Button></IsGranted>
 
-                        <FormControl fullWidth>
-                          <Field as={TextField} name="phone" label="Customer phone" type="text" variant="outlined" size="small" error={touched.phone && !!errors.phone} />
-                          <ErrorMessage name="phone" component={ValidationError} />
-                        </FormControl>
-                      </div>
+                  <IsGranted permissions={['delete_customers']}><Button onClick={() => this.setState({ showDeleteWarning: true, saveError: null })} type="button" variant="contained" color="secondary" size="small">Delete</Button></IsGranted>
+                </FormActions>
+              </FormContent>
 
-                      {this.state.saveError && <div><ValidationError>{this.state.saveError}</ValidationError></div>}
+            </CardContent>}
+          </IsGranted>
 
-                      <FormActions>
+          <IsGranted permissions={['create_customers', 'update_customers']}>
+            {(this.state.mode === 'ADD' || this.state.mode === 'EDIT') && <Card elevation={0}>
+              <CardContent>
+                <Formik initialValues={{ ...this.state.formValues }}
+                  validationSchema={this.validationSchema}
+                  validateOnMount={true}
+                  enableReinitialize={true}
+                  onSubmit={(values, { setSubmitting }) => {
+                    this.save(values).then(val => { }).catch(err => setSubmitting(false));
+                  }}>
+                  {({
+                    handleSubmit,
+                    touched,
+                    errors,
+                    isValid,
+                    isSubmitting
+                  }) => <Form noValidate autoComplete="off" onSubmit={handleSubmit}>
+                      <SectionTitle gutterBottom variant="h5">{this.state.mode === 'EDIT' ? 'Update customer' : 'Add new customer'}</SectionTitle>
+                      <FormContent>
+                        <div>
+                          <FormControl fullWidth>
+                            <Field as={TextField} name="name" label="Customer name" type="text" required variant="outlined" size="small" error={touched.name && !!errors.name} />
+                            <ErrorMessage name="name" component={ValidationError} />
+                          </FormControl>
 
-                        {this.state.mode === 'EDIT' && <Button onClick={() => this.viewCustomer(this.state.selectedCustomer)} type="button" disabled={isSubmitting} variant="contained" color="default" size="small">Cancel</Button>}
+                          <FormControl fullWidth>
+                            <Field as={TextField} name="phone" label="Customer phone" type="text" variant="outlined" size="small" error={touched.phone && !!errors.phone} />
+                            <ErrorMessage name="phone" component={ValidationError} />
+                          </FormControl>
+                        </div>
 
-                        <Button type="submit" disabled={!isValid || isSubmitting} variant="contained" color="primary" size="small">Save</Button>
-                      </FormActions>
+                        {this.state.saveError && <div><ValidationError>{this.state.saveError}</ValidationError></div>}
 
-                    </FormContent>
-                  </Form>
-                }
-              </Formik>
-            </CardContent>
-          </Card>}
+                        <FormActions>
 
+                          {this.state.mode === 'EDIT' && <Button onClick={() => this.viewCustomer(this.state.selectedCustomer)} type="button" disabled={isSubmitting} variant="contained" color="default" size="small">Cancel</Button>}
+
+                          <Button type="submit" disabled={!isValid || isSubmitting} variant="contained" color="primary" size="small">Save</Button>
+                        </FormActions>
+
+                      </FormContent>
+                    </Form>
+                  }
+                </Formik>
+              </CardContent>
+            </Card>}
+          </IsGranted>
         </Grid>
 
         {/* Delete warning  */}

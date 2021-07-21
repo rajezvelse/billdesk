@@ -21,7 +21,7 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 
-import { Currency, FormatDate } from '../../directives';
+import { Currency, FormatDate, IsGranted } from '../../directives';
 
 import { uniqueId } from 'lodash';
 
@@ -150,14 +150,15 @@ class PurchaseDetails extends ReactComponent<WithSnackbarProps & { id: number; }
                 <SectionTitle gutterBottom variant="h5">
                   Purchase details
 
-                  {(!this.state.fetchError && this.state.data) &&
-                    <Tooltip title="Delete purchase" arrow placement="top">
-                      <Button onClick={() => this.setState({ showDeleteWarning: true, selectedForDelete: this.state.data.id })} variant="contained" size="small" color="secondary">
-                        Delete
+                  <IsGranted permissions={['delete_purchase']}>
+                    {(!this.state.fetchError && this.state.data) &&
+                      <Tooltip title="Delete purchase" arrow placement="top">
+                        <Button onClick={() => this.setState({ showDeleteWarning: true, selectedForDelete: this.state.data.id })} variant="contained" size="small" color="secondary">
+                          Delete
                         </Button>
-                    </Tooltip>
-                  }
-
+                      </Tooltip>
+                    }
+                  </IsGranted>
                   <Button onClick={() => navigateBack()} variant="contained" size="small" color="primary">
                     <DoubleArrowIconBack />
 
@@ -253,68 +254,71 @@ class PurchaseDetails extends ReactComponent<WithSnackbarProps & { id: number; }
                     <SectionDivider light />
 
                     <Grid container>
-                      {/* Payment history */}
-                      <Grid item xs={12} md={6}>
+                      <IsGranted permissions={['view_purchase_payments']}>
+                        {/* Payment history */}
+                        <Grid item xs={12} md={6}>
 
-                        <Grid container>
-                          <Grid item xs={10}>
-                            <SubSectionTitle gutterBottom variant="h6">
-                              Payment history:
-
-                              {this.state.data.balanceAmount > 0 &&
-                                <Tooltip title="Add new payment" arrow placement="top">
-                                  <Button onClick={() => this.setState({ openAddNewPaymentDialog: true })} variant="contained" size="small" color="primary">
-                                    <AddIcon />
-                                  </Button>
-                                </Tooltip>
-                              }
-                            </SubSectionTitle>
-                          </Grid>
-                        </Grid>
-
-                        <TableContainer>
-
-                          <Table>
-                            <TableHead>
-                              <TableRow>
-                                <TableCell component="th">#</TableCell>
-                                <TableCell component="th">Date</TableCell>
-                                <TableCell component="th">Payment mode</TableCell>
-                                <TableCell component="th">Amount</TableCell>
-                                <NoBorderWhiteTh></NoBorderWhiteTh>
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {this.state.data.payments.map((payment: any, index: number) => (
-                                <TableRow key={uniqueId()}>
-                                  <TableCell>{index + 1}</TableCell>
-                                  <TableCell><FormatDate value={payment.date} /></TableCell>
-                                  <TableCell>{payment.mode}</TableCell>
-                                  <TableCell><Currency value={payment.amount} /></TableCell>
-
-                                  <NoBorderTd>
-                                    <Tooltip title="Delete payment" arrow placement="top">
-                                      <IconButton onClick={() => this.setState({ showPaymentDeleteWarning: true, selectedPaymentForDelete: payment.id })} color="secondary">
-                                        <HighlightOffIcon />
-                                      </IconButton>
+                          <Grid container>
+                            <Grid item xs={10}>
+                              <SubSectionTitle gutterBottom variant="h6">
+                                Payment history:
+                              <IsGranted permissions={['create_purchase_payments']}>
+                                  {this.state.data.balanceAmount > 0 &&
+                                    <Tooltip title="Add new payment" arrow placement="top">
+                                      <Button onClick={() => this.setState({ openAddNewPaymentDialog: true })} variant="contained" size="small" color="primary">
+                                        <AddIcon />
+                                      </Button>
                                     </Tooltip>
-                                  </NoBorderTd>
+                                  }
+                                </IsGranted>
+                              </SubSectionTitle>
+                            </Grid>
+                          </Grid>
+
+                          <TableContainer>
+
+                            <Table>
+                              <TableHead>
+                                <TableRow>
+                                  <TableCell component="th">#</TableCell>
+                                  <TableCell component="th">Date</TableCell>
+                                  <TableCell component="th">Payment mode</TableCell>
+                                  <TableCell component="th">Amount</TableCell>
+                                  <IsGranted permissions={['delete_purchase_payments']}><NoBorderWhiteTh></NoBorderWhiteTh></IsGranted>
                                 </TableRow>
-                              ))}
-                              <TableRow>
-                                <TableCell ></TableCell>
-                                <TableCell ></TableCell>
-                                <TableCell >Total payment</TableCell>
-                                <TableCell ><Currency value={this.state.totalPayment} /></TableCell>
-                                <NoBorderTd></NoBorderTd>
-                              </TableRow>
-                            </TableBody>
-                          </Table>
+                              </TableHead>
+                              <TableBody>
+                                {this.state.data.payments.map((payment: any, index: number) => (
+                                  <TableRow key={uniqueId()}>
+                                    <TableCell>{index + 1}</TableCell>
+                                    <TableCell><FormatDate value={payment.date} /></TableCell>
+                                    <TableCell>{payment.mode}</TableCell>
+                                    <TableCell><Currency value={payment.amount} /></TableCell>
+                                    <IsGranted permissions={['delete_purchase_payments']}>
+                                      <NoBorderTd>
+                                        <Tooltip title="Delete payment" arrow placement="top">
+                                          <IconButton onClick={() => this.setState({ showPaymentDeleteWarning: true, selectedPaymentForDelete: payment.id })} color="secondary">
+                                            <HighlightOffIcon />
+                                          </IconButton>
+                                        </Tooltip>
+                                      </NoBorderTd>
+                                    </IsGranted>
+                                  </TableRow>
+                                ))}
+                                <TableRow>
+                                  <TableCell ></TableCell>
+                                  <TableCell ></TableCell>
+                                  <TableCell >Total payment</TableCell>
+                                  <TableCell ><Currency value={this.state.totalPayment} /></TableCell>
+                                  <IsGranted permissions={['delete_purchase_payments']}><NoBorderTd></NoBorderTd></IsGranted>
+                                </TableRow>
+                              </TableBody>
+                            </Table>
 
-                        </TableContainer>
+                          </TableContainer>
 
-                      </Grid>
-
+                        </Grid>
+                      </IsGranted>
                       <Grid item xs={12} md={6}>
 
                       </Grid>

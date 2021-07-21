@@ -54,13 +54,13 @@ class SalesReports extends ReactComponent<any, {
         customerId: null,
         searchText: '',
         date: {
-          label: "Today",
-          startDate: moment().startOf('day').toDate(),
-          endDate: moment().endOf('day').toDate()
+          label: "This Week",
+          startDate: moment().startOf('week').toDate(),
+          endDate: moment().endOf('week').toDate()
         }
       },
       showDateDropdown: false,
-      selectedDateOption: 'today',
+      selectedDateOption: 'this_week',
       productSearchIsOpen: false
     }
   }
@@ -98,6 +98,7 @@ class SalesReports extends ReactComponent<any, {
   }
 
   handleDateDropdownClick = (value: any) => {
+    console.log(value)
     if (!value.label) value.label = 'Custom date range';
 
     let startDate: any, endDate: any;
@@ -178,8 +179,8 @@ class SalesReports extends ReactComponent<any, {
                       <DateRangeContainer>
                         <DateRangePicker
                           initialDateRange={{
-                            startDate: moment().startOf('day').toDate(),
-                            endDate: moment().endOf('day').toDate()
+                            startDate: this.state.filters.date.startDate,
+                            endDate: this.state.filters.date.endDate
                           }}
                           open={this.state.showDateDropdown}
                           toggle={() => this.setState({ showDateDropdown: !this.state.showDateDropdown })}

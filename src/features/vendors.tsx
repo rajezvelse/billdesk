@@ -2,6 +2,7 @@ import React from 'react';
 import ReactComponent from '../react-component'
 import { IpcRendererEvent } from "electron";
 import RootContext from '../root.context';
+import { IsGranted } from '../directives';
 
 import uniqueId from 'lodash/uniqueId';
 import {
@@ -67,7 +68,7 @@ class Vendors extends ReactComponent<any, {
 
 
   componentDidMount() {
-super.componentDidMount();
+    super.componentDidMount();
 
     // Load vendors list  
     if (this.context.electronIpc) this.fetchVendors();
@@ -256,11 +257,13 @@ super.componentDidMount();
               <CardContent>
                 <CardSectionTitle gutterBottom variant="h5">
                   Vendors list
-                  <Tooltip title="Add new Vendor" arrow placement="top">
-                    <Button onClick={this.openAddForm} variant="contained" size="small" color="primary">
-                      <AddIcon />
-                    </Button>
-                  </Tooltip>
+                  <IsGranted permissions={['create_vendors']}>
+                    <Tooltip title="Add new Vendor" arrow placement="top">
+                      <Button onClick={this.openAddForm} variant="contained" size="small" color="primary">
+                        <AddIcon />
+                      </Button>
+                    </Tooltip>
+                  </IsGranted>
                 </CardSectionTitle>
                 <ScrollWrapper >
                   <ItemsList>
@@ -302,78 +305,85 @@ super.componentDidMount();
                 </DetailRow>
 
                 <FormActions>
-                  <Button onClick={this.selectForEdit} type="button" variant="contained" color="primary" size="small">Edit</Button>
-                  <Button onClick={() => this.setState({ showDeleteWarning: true, saveError: null })} type="button" variant="contained" color="secondary" size="small">Delete</Button>
+
+                  <IsGranted permissions={['update_vendors']}>
+                    <Button onClick={this.selectForEdit} type="button" variant="contained" color="primary" size="small">Edit</Button>
+                  </IsGranted>
+
+                  <IsGranted permissions={['delete_vendors']}>
+                    <Button onClick={() => this.setState({ showDeleteWarning: true, saveError: null })} type="button" variant="contained" color="secondary" size="small">Delete</Button>
+                  </IsGranted>
                 </FormActions>
               </FormContent>
 
             </CardContent>}
 
-            {(this.state.mode === 'ADD' || this.state.mode === 'EDIT') && <Card elevation={0}>
-              <CardContent>
-                <Formik initialValues={{ ...this.state.formValues }}
-                  validationSchema={this.validationSchema}
-                  validateOnMount={true}
-                  enableReinitialize={true}
-                  onSubmit={(values, { setSubmitting }) => {
-                    this.save(values).then(val => { }).catch(err => setSubmitting(false));
-                  }}>
-                  {({
-                    handleSubmit,
-                    touched,
-                    errors,
-                    isValid,
-                    isSubmitting
-                  }) => <Form noValidate autoComplete="off" onSubmit={handleSubmit}>
-                      <SectionTitle gutterBottom variant="h5">{this.state.mode === 'EDIT' ? 'Update Vendor details' : 'Add new Vendor'}</SectionTitle>
-                      <FormContent>
-                        <div>
-                          <FormControl fullWidth>
-                            <Field as={TextField} name="name" label="Vendor name" type="text" required variant="outlined" size="small" error={touched.name && !!errors.name} />
-                            <ErrorMessage name="name" component={ValidationError} />
-                          </FormControl>
-                        </div>
-                        <div>
-                          <FormControl fullWidth>
-                            <Field as={TextField} name="mobile" label="Vendor mobile number" required type="text" variant="outlined" size="small" error={touched.mobile && !!errors.mobile} />
-                            <ErrorMessage name="mobile" component={ValidationError} />
-                          </FormControl>
-                        </div>
-                        <div>
-                          <FormControl fullWidth>
-                            <Field as={TextField} name="email" label="Vendor email" type="text" variant="outlined" size="small" error={touched.email && !!errors.email} />
-                            <ErrorMessage name="email" component={ValidationError} />
-                          </FormControl>
-                        </div>
-                        <div>
-                          <FormControl fullWidth>
-                            <Field as={TextField} name="gstin" label="Vendor GSTIN number" type="text" variant="outlined" size="small" error={touched.gstin && !!errors.gstin} />
-                            <ErrorMessage name="gstin" component={ValidationError} />
-                          </FormControl>
-                        </div>
-                        <div>
-                          <FormControl fullWidth>
-                            <Field as={TextField} name="address" label="Vendor address" type="text" multiline={true} rows="6" variant="outlined" size="small" error={touched.address && !!errors.address} />
-                            <ErrorMessage name="address" component={ValidationError} />
-                          </FormControl>
-                        </div>
+            <IsGranted permissions={['create_vendors', 'update_vendors']}>
+              {(this.state.mode === 'ADD' || this.state.mode === 'EDIT') && <Card elevation={0}>
+                <CardContent>
+                  <Formik initialValues={{ ...this.state.formValues }}
+                    validationSchema={this.validationSchema}
+                    validateOnMount={true}
+                    enableReinitialize={true}
+                    onSubmit={(values, { setSubmitting }) => {
+                      this.save(values).then(val => { }).catch(err => setSubmitting(false));
+                    }}>
+                    {({
+                      handleSubmit,
+                      touched,
+                      errors,
+                      isValid,
+                      isSubmitting
+                    }) => <Form noValidate autoComplete="off" onSubmit={handleSubmit}>
+                        <SectionTitle gutterBottom variant="h5">{this.state.mode === 'EDIT' ? 'Update Vendor details' : 'Add new Vendor'}</SectionTitle>
+                        <FormContent>
+                          <div>
+                            <FormControl fullWidth>
+                              <Field as={TextField} name="name" label="Vendor name" type="text" required variant="outlined" size="small" error={touched.name && !!errors.name} />
+                              <ErrorMessage name="name" component={ValidationError} />
+                            </FormControl>
+                          </div>
+                          <div>
+                            <FormControl fullWidth>
+                              <Field as={TextField} name="mobile" label="Vendor mobile number" required type="text" variant="outlined" size="small" error={touched.mobile && !!errors.mobile} />
+                              <ErrorMessage name="mobile" component={ValidationError} />
+                            </FormControl>
+                          </div>
+                          <div>
+                            <FormControl fullWidth>
+                              <Field as={TextField} name="email" label="Vendor email" type="text" variant="outlined" size="small" error={touched.email && !!errors.email} />
+                              <ErrorMessage name="email" component={ValidationError} />
+                            </FormControl>
+                          </div>
+                          <div>
+                            <FormControl fullWidth>
+                              <Field as={TextField} name="gstin" label="Vendor GSTIN number" type="text" variant="outlined" size="small" error={touched.gstin && !!errors.gstin} />
+                              <ErrorMessage name="gstin" component={ValidationError} />
+                            </FormControl>
+                          </div>
+                          <div>
+                            <FormControl fullWidth>
+                              <Field as={TextField} name="address" label="Vendor address" type="text" multiline={true} rows="6" variant="outlined" size="small" error={touched.address && !!errors.address} />
+                              <ErrorMessage name="address" component={ValidationError} />
+                            </FormControl>
+                          </div>
 
-                        {this.state.saveError && <div><ValidationError>{this.state.saveError}</ValidationError></div>}
+                          {this.state.saveError && <div><ValidationError>{this.state.saveError}</ValidationError></div>}
 
-                        <FormActions>
+                          <FormActions>
 
-                          {this.state.mode === 'EDIT' && <Button onClick={() => this.viewVendor(this.state.selectedVendor)} type="button" disabled={isSubmitting} variant="contained" color="default" size="small">Cancel</Button>}
+                            {this.state.mode === 'EDIT' && <Button onClick={() => this.viewVendor(this.state.selectedVendor)} type="button" disabled={isSubmitting} variant="contained" color="default" size="small">Cancel</Button>}
 
-                          <Button type="submit" disabled={!isValid || isSubmitting} variant="contained" color="primary" size="small">Save</Button>
-                        </FormActions>
+                            <Button type="submit" disabled={!isValid || isSubmitting} variant="contained" color="primary" size="small">Save</Button>
+                          </FormActions>
 
-                      </FormContent>
-                    </Form>
-                  }
-                </Formik>
-              </CardContent>
-            </Card>}
-
+                        </FormContent>
+                      </Form>
+                    }
+                  </Formik>
+                </CardContent>
+              </Card>}
+            </IsGranted>
           </Grid>
         </Grid>
 

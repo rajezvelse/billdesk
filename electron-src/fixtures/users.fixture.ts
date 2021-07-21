@@ -12,7 +12,7 @@ export const load = async (connection: Connection) => {
     if (adminUser.length == 0) {
         let roleRepository = connection.getRepository(Role);
 
-        let adminRole = await roleRepository.findOne({ name: 'dinesh' });
+        let adminRole = await roleRepository.findOne({ name: 'Admin' });
         const user = new User();
 
         user.username = 'dinesh';

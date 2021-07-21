@@ -4,7 +4,7 @@ import { IpcRendererEvent } from "electron"
 import RootContext from '../../../root.context'
 import uniqueId from 'lodash/uniqueId';
 
-import { Currency, FormatDate } from '../../../directives';
+import { Currency, FormatDate, IsGranted } from '../../../directives';
 import {
   CardSectionTitle, ValidationError, TableHead, TableFilterGrid,
   FilterDropdownButton, GridFullHeight, ColoredLabel,
@@ -172,6 +172,7 @@ class ProductWiseProfit extends ReactComponent<any, {
   render() {
     return (
       <>
+      <IsGranted permissions={['view_purchase', 'view_sales']}>
         <RootContext.Consumer>
           {({ navigate }) => (
             <>
@@ -217,8 +218,8 @@ class ProductWiseProfit extends ReactComponent<any, {
                                   <DateRangeContainer>
                                     <DateRangePicker
                                       initialDateRange={{
-                                        startDate: moment().startOf('month').toDate(),
-                                        endDate: moment().endOf('month').toDate()
+                                        startDate: this.state.filters.date.startDate,
+                                        endDate: this.state.filters.date.endDate
                                       }}
                                       open={this.state.showDateDropdown}
                                       toggle={() => this.setState({ showDateDropdown: !this.state.showDateDropdown })}
@@ -365,6 +366,7 @@ class ProductWiseProfit extends ReactComponent<any, {
             </>
           )}
         </RootContext.Consumer>
+        </IsGranted>
       </>)
   }
 }

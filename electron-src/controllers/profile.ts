@@ -2,6 +2,7 @@ import { ipcMain, BrowserWindow, IpcMainEvent } from 'electron';
 import { Settings } from '../settings';
 import { User } from '../entity';
 import { verify } from '../utils';
+import { print } from '../utils';
 
 ipcMain.on('changePassword', (event: IpcMainEvent, { username, currentPassword, newPassword }) => {
 

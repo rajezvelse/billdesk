@@ -3,6 +3,8 @@ import ReactComponent from '../../../react-component';
 
 import { IpcRendererEvent } from "electron";
 import RootContext from '../../../root.context';
+import { IsGranted } from '../../../directives';
+
 import uniqueId from 'lodash/uniqueId';
 
 import {
@@ -262,18 +264,20 @@ class SalesReportsRecords extends ReactComponent<WithSnackbarProps & {
                                           View
                                     </Button>
                                       </Tooltip>
-                                      <Tooltip title="Delete sale" arrow placement="top">
-                                        <Button onClick={() => this.setState({ showDeleteWarning: true, selectedForDelete: sale.id })} variant="contained" size="small" color="secondary">
-                                          Delete
-                                    </Button>
-                                      </Tooltip>
+                                      <IsGranted permissions={['delete_sales']}>
+                                        <Tooltip title="Delete sale" arrow placement="top">
+                                          <Button onClick={() => this.setState({ showDeleteWarning: true, selectedForDelete: sale.id })} variant="contained" size="small" color="secondary">
+                                            Delete
+                                          </Button>
+                                        </Tooltip>
+                                      </IsGranted>
                                     </TableButtonsContainer>
                                   </TableCell>
                                 </TableRow>
                               ))}
                             </TableBody>
                           </Table>
-                          
+
                           {this.state.data.length === 0 && <div>No records available.</div>}
                         </TableContainer>
                         {this.state.totalPages > 0 &&
