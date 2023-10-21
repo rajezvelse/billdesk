@@ -57,6 +57,10 @@ export const ParticularsDiscountField = styled(ParticularsTextField)`
 width: 100px;
 `;
 
+export const ParticularsDiscountedCostField = styled(ParticularsTextField)`
+width: 125px;
+`;
+
 export const ParticularsAutoComplete = styled(Autocomplete)`
   min-width: 300px;
 

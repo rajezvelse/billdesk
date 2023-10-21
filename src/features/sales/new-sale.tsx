@@ -11,7 +11,7 @@ import SalesDrafts from './sales-drafts';
 import {
   SectionTitle, SubSectionTitle, SubSection, Form, ParticularsTable,
   ParticularsTextField, ParticularsQtyField,
-  ParticularsDiscountField, RightAlignedTd, NoBorderTd,
+  ParticularsDiscountField, ParticularsDiscountedCostField, RightAlignedTd, NoBorderTd,
   Autocomplete, ParticularsAutoComplete, ParticularsTableSelect,
   ValidationError, RequiredAstrix, FormActions, TableHead,
   NoBorderWhiteTh, StyledModal, WarningModalActions
@@ -276,10 +276,17 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
 
   }
 
-  updateItemRow = (setFieldValue: Function, arrayHelpers: any, index: number, price: number, qty: number, discount: number, quantityRemaining: number, modifiedField?: string) => {
+  updateItemRow = (setFieldValue: Function, arrayHelpers: any, index: number, price: number, qty: number, discount: number, quantityRemaining: number, discountedCost?: number, modifiedField?: string) => {
     let cost: number = price * qty,
-      dCost: number = (cost - discount),
+      dCost: number = 0,
       fPrefix: string = `particulars[${index}].`;
+
+    if (modifiedField !== 'discountedCost')
+      dCost = (cost - discount)
+    else if (discountedCost) {
+      dCost = discountedCost;
+      discount = cost - discountedCost
+    }
 
     // Updating available qty
     setFieldValue(fPrefix + 'quantityRemaining', quantityRemaining, true);
@@ -766,7 +773,7 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
 
                                                   this.debounce(
                                                     () => {
-                                                      this.updateItemRow(setFieldValue, arrayHelpers, index, item.price, e.target.value, item.discount, item.quantityAvailable - e.target.value, 'quantity');
+                                                      this.updateItemRow(setFieldValue, arrayHelpers, index, item.price, e.target.value, item.discount, item.quantityAvailable - e.target.value, undefined, 'quantity');
                                                       if (values.particulars.length - 1 === index) { arrayHelpers.push(this.getNewRow()); this.setState({ particularsLastRowNum: this.state.particularsLastRowNum + 1 }) }
                                                     }
                                                   );
@@ -786,7 +793,7 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
 
                                                   this.debounce(
                                                     () => {
-                                                      this.updateItemRow(setFieldValue, arrayHelpers, index, item.price, item.quantity, e.target.value, item.quantityRemaining, 'discount');
+                                                      this.updateItemRow(setFieldValue, arrayHelpers, index, item.price, item.quantity, e.target.value, item.quantityRemaining, undefined, 'discount');
                                                       if (values.particulars.length - 1 === index) { arrayHelpers.push(this.getNewRow()); this.setState({ particularsLastRowNum: this.state.particularsLastRowNum + 1 }) }
                                                     }
                                                   );
@@ -794,7 +801,27 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
                                                 }}
                                               />
                                             </td>
-                                            <RightAlignedTd><Currency value={values.particulars[index].discountedCost} /></RightAlignedTd>
+
+                                            <td>
+                                              <Field as={ParticularsDiscountedCostField} name={`particulars[${index}].discountedCost`} disabled={!values.particulars[index].productId} type="number" placeholder="Discounted cost" required variant="outlined" size="small" error={getIn(touched, `particulars[${index}].discountedCost`) && !!getIn(errors, `particulars[${index}].discountedCost`)}
+                                                InputProps={{
+                                                  startAdornment: <InputAdornment position="start">₹</InputAdornment>,
+                                                }}
+                                                onChange={(e: any) => {
+                                                  let item = values.particulars[index];
+
+                                                  handleChange(e);
+
+                                                  this.debounce(
+                                                    () => {
+                                                      this.updateItemRow(setFieldValue, arrayHelpers, index, item.price, item.quantity, item.discount, item.quantityRemaining, e.target.value, 'discountedCost');
+                                                      if (values.particulars.length - 1 === index) { arrayHelpers.push(this.getNewRow()); this.setState({ particularsLastRowNum: this.state.particularsLastRowNum + 1 }) }
+                                                    }
+                                                  );
+
+                                                }}
+                                              />
+                                            </td>
                                             <NoBorderTd>
                                               {values.particulars.length - 1 !== index &&
                                                 <Tooltip title="Remove this item" arrow placement="top">
