@@ -12,7 +12,7 @@ import {
   Grid, Button, TextField, InputAdornment
 } from '@material-ui/core';
 
-import { withSnackbar } from 'notistack'
+
 
 import DateFnsUtils from '@date-io/date-fns';
 import {
@@ -22,6 +22,7 @@ import {
 
 import * as Yup from 'yup';
 import { Formik, Field, ErrorMessage, getIn } from 'formik';
+import withSnackbar from '../../directives/with-snackbar';
 
 class ExpenseAddEdit extends ReactComponent<any, {
   mode: 'ADD' | 'EDIT',
@@ -35,7 +36,8 @@ class ExpenseAddEdit extends ReactComponent<any, {
   saveError: null | string;
   selectedExpense: null | any;
 }> {
-  validationSchema: Yup.ObjectSchema = Yup.object().shape({
+  context: any;
+  validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
     date: Yup.date().required('Please enter the date').nullable(),
     description: Yup.string().required('Please enter description'),
     category: Yup.number().required('Please select expense category'),

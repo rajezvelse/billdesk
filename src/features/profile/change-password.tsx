@@ -13,10 +13,11 @@ import {
   TextField
 } from '@material-ui/core';
 
-import { withSnackbar } from 'notistack'
+
 
 import * as Yup from 'yup';
 import { Formik, Field, ErrorMessage } from 'formik';
+import withSnackbar from '../../directives/with-snackbar';
 
 
 class ChangePassword extends ReactComponent<any, {
@@ -28,7 +29,8 @@ class ChangePassword extends ReactComponent<any, {
   };
   showLogoutWarning: boolean;
 }> {
-  validationSchema: Yup.ObjectSchema = Yup.object().shape({
+  context: any;
+  validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
     currentPassword: Yup.string().required('Please enter the current password'),
     newPassword: Yup.string().required('Please enter new password').min(6, 'Password should have atleast 6 characters'),
     confirmNewPassword: Yup.string().required('Please re-enter the new password')

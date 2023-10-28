@@ -9,3 +9,8 @@ export interface SnackbarContextType {
   snackPack: SnackbarMessageType[];
   messageInfo?: SnackbarMessageType;
 }
+
+export interface WithSnackbarProps {
+  enqueueSnackbar: (...args: any) => void
+  closeSnackbar?: (...args: any) => void
+}

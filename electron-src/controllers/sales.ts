@@ -35,7 +35,7 @@ ipcMain.on('getSalesFormData', (event: IpcMainEvent) => {
       let products = await query.getRawMany();
 
       products = products.map((p: any) => {
-        if(p.quantityAvailable === null) p.quantityAvailable = 0;
+        if (p.quantityAvailable === null) p.quantityAvailable = 0;
         return p;
       })
 
@@ -187,10 +187,10 @@ ipcMain.on('saveNewSale', (event: IpcMainEvent, { id, status, date, customer, pa
       let paymentRepo = connection.getRepository(SalesPayment);
 
 
-      let customerRecord: Customer;
+      let customerRecord: Customer | null;
 
       if (customer['customerId']) {
-        customerRecord = await customerRepository.findOne({ id: customer.customerId });
+        customerRecord = await customerRepository.findOne({ where: { id: customer.customerId } });
       } else {
         customerRecord = new Customer();
         customerRecord.name = customer.name;
@@ -203,7 +203,7 @@ ipcMain.on('saveNewSale', (event: IpcMainEvent, { id, status, date, customer, pa
 
 
       // Sales record
-      let salesRecord: Sales;
+      let salesRecord: Sales | null;
 
       if (id) {
         salesRecord = await salesRepo.findOne(id);
@@ -218,7 +218,7 @@ ipcMain.on('saveNewSale', (event: IpcMainEvent, { id, status, date, customer, pa
       }
 
       salesRecord.date = date;
-      salesRecord.customer = customerRecord;
+      if (customerRecord) salesRecord.customer = customerRecord;
       salesRecord.totalCost = totalCost;
       salesRecord.totalDiscount = totalDiscount;
       salesRecord.totalDiscountedCost = totalDiscountedCost;
@@ -250,7 +250,7 @@ ipcMain.on('saveNewSale', (event: IpcMainEvent, { id, status, date, customer, pa
       try {
         // Particulars entries
         if (particulars.length > 0) {
-          let existingParticularsRecords: Array<SalesParticulars> = await salesParticularsRepo.find({ salesRecord: salesRecord });
+          let existingParticularsRecords: Array<SalesParticulars> = await salesParticularsRepo.find({ where: { salesRecord: salesRecord } });
           let particularsRecords: Array<SalesParticulars> = [];
 
           const stocksRepo = connection.getRepository(ProductStocks);
@@ -260,15 +260,17 @@ ipcMain.on('saveNewSale', (event: IpcMainEvent, { id, status, date, customer, pa
 
           particulars.forEach((p: any) => {
 
-            let pRec: SalesParticulars;
+            let pRec: SalesParticulars | null | undefined;
 
             if (existingParticularsRecords.length) {
               pRec = existingParticularsRecords.shift();
-            } else {
+            }
+
+            if (!pRec) {
               pRec = new SalesParticulars();
             }
 
-            pRec.salesRecord = salesRecord;
+            if (salesRecord) pRec.salesRecord = salesRecord;
             pRec.product = p.productId;
             pRec.price = p.price;
             pRec.quantity = p.quantity;
@@ -280,7 +282,7 @@ ipcMain.on('saveNewSale', (event: IpcMainEvent, { id, status, date, customer, pa
 
             // Revising the stocks records
             if (status === 'SUBMITTED') {
-              let purchaseCostPortions = [];
+              let purchaseCostPortions: Array<{}> = [];
 
               let matches = stockDetails.filter((sr: ProductStocks) => sr.product.id === p.productId);
               let soldQty: number = p.quantity;
@@ -348,12 +350,13 @@ ipcMain.on('saveNewSale', (event: IpcMainEvent, { id, status, date, customer, pa
         try {
           // Payments entry
 
-          let existingPayments = await paymentRepo.find({ salesRecord: salesRecord });
+          let existingPayments = await paymentRepo.find({ where: { salesRecord: salesRecord } });
 
-          let paymentRecord: SalesPayment;
+          let paymentRecord: SalesPayment | null | undefined;
 
           if (existingPayments.length) paymentRecord = existingPayments.shift();
-          else paymentRecord = new SalesPayment();
+
+          if (!paymentRecord) paymentRecord = new SalesPayment();
 
           paymentRecord.salesRecord = salesRecord;
           paymentRecord.date = date;
@@ -400,7 +403,7 @@ ipcMain.on('fetchSaleData', (event: IpcMainEvent, { id }) => {
         particularsRepo = connection.getRepository(SalesParticulars),
         salesPaymentsRepo = connection.getRepository(SalesPayment);
 
-      let record = await salesRepo.findOne(id, { relations: ['customer'] });
+      let record = await salesRepo.findOne({ where: { id }, relations: ['customer'] });
 
       if (!record) {
         Settings.sendWebContent('fetchSaleDataResponse', 404, 'No Sale record found');
@@ -467,7 +470,7 @@ ipcMain.on('deleteSale', (event: IpcMainEvent, { id }) => {
       }
 
       let salesParticularsRepo = connection.getRepository(SalesParticulars);
-      let particularsRecords: SalesParticulars[] = await salesParticularsRepo.find({ where: {salesRecord: record}, relations: ['product']});
+      let particularsRecords: SalesParticulars[] = await salesParticularsRepo.find({ where: { salesRecord: record }, relations: ['product'] });
 
       // Update stocks
       if (particularsRecords.length > 0) {
@@ -475,7 +478,7 @@ ipcMain.on('deleteSale', (event: IpcMainEvent, { id }) => {
         let particularsRecordsNormalized: any[] = [];
 
         particularsRecords.forEach((p: SalesParticulars) => {
-          let portions = p.purchaseCostPortions !== null? JSON.parse(p.purchaseCostPortions): [];
+          let portions = p.purchaseCostPortions !== null ? JSON.parse(p.purchaseCostPortions) : [];
 
           portions.forEach((por: any) => {
             particularsRecordsNormalized.push({
@@ -486,28 +489,28 @@ ipcMain.on('deleteSale', (event: IpcMainEvent, { id }) => {
           });
         })
 
-        if(particularsRecordsNormalized.length > 0){
+        if (particularsRecordsNormalized.length > 0) {
           let i: number = 0, stockRecords: ProductStocks[] = [];
 
           let updateStocks = async (loopIndex: number) => {
             let particular: any = particularsRecordsNormalized[loopIndex];
             let purchasePrice = particular['purchasePrice'];
-  
+
             let stockEntries = await stocksRepo.find({ where: { product: particular['productId'], price: purchasePrice } });
-  
+
             if (stockEntries.length) {
               let stockMatchEntry = stockEntries[0];
               stockMatchEntry.quantityAvailable += particular['quantity'];
-  
+
               stockRecords.push(stockMatchEntry);
             }
-  
+
             if (i + 1 < particularsRecordsNormalized.length) {
               i += 1;
               await updateStocks(i);
             }
           }
-  
+
           await updateStocks(0);
           if (stockRecords.length > 0) await stocksRepo.save(stockRecords);
         }

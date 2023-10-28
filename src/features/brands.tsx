@@ -17,10 +17,11 @@ import {
 import AddIcon from '@material-ui/icons/Add';
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 
-import { withSnackbar } from 'notistack'
+
 
 import * as Yup from 'yup';
 import { Formik, Field, ErrorMessage } from 'formik';
+import withSnackbar from '../directives/with-snackbar';
 
 
 class Brands extends ReactComponent<any, {
@@ -34,7 +35,8 @@ class Brands extends ReactComponent<any, {
   }
   showDeleteWarning: boolean;
 }> {
-  validationSchema: Yup.ObjectSchema = Yup.object().shape({
+  context: any;
+  validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
     name: Yup.string().required('Please enter brand name')
   });
 

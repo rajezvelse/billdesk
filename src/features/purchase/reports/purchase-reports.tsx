@@ -42,6 +42,7 @@ class PurchaseReports extends ReactComponent<any, {
   selectedDateOption: 'today' | 'yesterday' | 'this_week' | 'this_month' | 'custom_range';
   productSearchIsOpen: boolean;
 }> {
+  context: any;
 
   constructor(props: any) {
     super(props);
@@ -120,7 +121,7 @@ class PurchaseReports extends ReactComponent<any, {
     this.setState({ filters, showDateDropdown: false })
   }
 
-  timerId: number | null = null;
+  timerId:  any = null;
   debounce = (callback: Function, waitTime?: number) => {
 
     if (this.timerId) {

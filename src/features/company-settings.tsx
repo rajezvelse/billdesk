@@ -11,13 +11,16 @@ import {
 } from '../styled-components';
 import {
   Grid, Card, CardContent, Button,
-  TextField
+  TextField,
+  Box
 } from '@material-ui/core';
 
-import { withSnackbar } from 'notistack'
+
 
 import * as Yup from 'yup';
 import { Formik, Field, ErrorMessage } from 'formik';
+import withSnackbar from '../directives/with-snackbar';
+import Branches from './branches';
 
 
 class CompanySettings extends ReactComponent<any, {
@@ -32,7 +35,8 @@ class CompanySettings extends ReactComponent<any, {
     COMPANY_ADDRESS: string;
   };
 }> {
-  validationSchema: Yup.ObjectSchema = Yup.object().shape({
+  context: any;
+  validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
     COMPANY_NAME: Yup.string().required('Please enter shop name'),
     COMPANY_MOBILE: Yup.string().required('Please enter shop mobile number'),
     COMPANY_EMAIL: Yup.string().email('Enter valid email address'),
@@ -60,7 +64,7 @@ class CompanySettings extends ReactComponent<any, {
   }
 
   componentDidMount() {
-super.componentDidMount();
+    super.componentDidMount();
 
     let data: any = {
       COMPANY_NAME: this.context.preferences['COMPANY_NAME'] || '',
@@ -132,134 +136,139 @@ super.componentDidMount();
   render() {
     return (
       <>
-        <Grid container spacing={2}>
-          {/* View/Edit section */}
-          {this.state.mode === 'VIEW' &&
-            <Grid item xs={5}>
-              <CardContent>
-                <SectionTitle gutterBottom variant="h5">Settings</SectionTitle>
-
-                <FormContent>
-                  <DetailRow>
-                    <DetailLabel xs={5}>Shop name</DetailLabel>
-                    <DetailValue xs={7}>{this.state.data.COMPANY_NAME ? this.state.data.COMPANY_NAME : '-'}</DetailValue>
-                  </DetailRow>
-
-                  <DetailRow>
-                    <DetailLabel xs={5}>Shop mobile number</DetailLabel>
-                    <DetailValue xs={7}>{this.state.data.COMPANY_MOBILE ? this.state.data.COMPANY_MOBILE : '-'}</DetailValue>
-                  </DetailRow>
-                  <DetailRow>
-                    <DetailLabel xs={5}>Shop email</DetailLabel>
-                    <DetailValue xs={7}>{this.state.data.COMPANY_WEBSITE ? <a href={"mailto:" + this.state.data.COMPANY_EMAIL}>{this.state.data.COMPANY_EMAIL}</a> : '-'}</DetailValue>
-                  </DetailRow>
-                  <DetailRow>
-                    <DetailLabel xs={5}>Shop website</DetailLabel>
-                    <DetailValue xs={7}>{this.state.data.COMPANY_WEBSITE ? <a href={this.state.data.COMPANY_WEBSITE} target="_blank" rel="noopener noreferrer">{this.state.data.COMPANY_WEBSITE}</a> : '-'}</DetailValue>
-                  </DetailRow>
-                  <DetailRow>
-                    <DetailLabel xs={5}>Shop address</DetailLabel>
-                    <DetailValue xs={7}><span style={{ whiteSpace: 'pre-line' }}>{this.state.data.COMPANY_ADDRESS ? this.state.data.COMPANY_ADDRESS : '-'}</span></DetailValue>
-                  </DetailRow>
-
-                  <FormActions>
-                  <IsGranted permissions={['update_company_settings']}>
-                    <Button onClick={this.openForm} type="button" variant="contained" color="primary" size="small">Edit</Button>
-                    </IsGranted>
-                  </FormActions>
-                </FormContent>
-
-              </CardContent>
-            </Grid>}
-
-          {(this.state.mode === 'EDIT') &&
-
-            <Grid item xs={10}>
-              <Card elevation={0}>
+        <Box sx={{ mb: 4}}>
+          <Grid container spacing={2} >
+            {/* View/Edit section */}
+            {this.state.mode === 'VIEW' &&
+              <Grid item xs={5}>
                 <CardContent>
-                  <Formik initialValues={{ ...this.state.data }}
-                    validationSchema={this.validationSchema}
-                    validateOnMount={true}
-                    enableReinitialize={true}
-                    onSubmit={(values, { setSubmitting }) => {
-                      this.save(values).then(val => { }).catch(err => setSubmitting(false));
-                    }}>
-                    {({
-                      handleSubmit,
-                      touched,
-                      errors,
-                      isValid,
-                      isSubmitting
-                    }) => <Form noValidate autoComplete="off" onSubmit={handleSubmit}>
-                        <SectionTitle gutterBottom variant="h5">Update settings</SectionTitle>
-                        <FormContent>
-                          <Grid container spacing={2}>
-                            <Grid item xs={6}>
-                              <div>
-                                <FormControl fullWidth>
-                                  <Field as={TextField} name="COMPANY_NAME" label="Shop name" type="text" required variant="outlined" size="small" error={touched.COMPANY_NAME && !!errors.COMPANY_NAME} />
-                                  <ErrorMessage name="COMPANY_NAME" component={ValidationError} />
-                                </FormControl>
-                              </div>
+                  <SectionTitle gutterBottom variant="h5">Settings</SectionTitle>
 
-                              <div>
-                                <FormControl fullWidth>
-                                  <Field as={TextField} name="COMPANY_MOBILE" label="Shop mobile number" type="text" required variant="outlined" size="small" error={touched.COMPANY_MOBILE && !!errors.COMPANY_MOBILE} />
-                                  <ErrorMessage name="COMPANY_MOBILE" component={ValidationError} />
-                                </FormControl>
-                              </div>
+                  <FormContent>
+                    <DetailRow>
+                      <DetailLabel xs={5}>Shop name</DetailLabel>
+                      <DetailValue xs={7}>{this.state.data.COMPANY_NAME ? this.state.data.COMPANY_NAME : '-'}</DetailValue>
+                    </DetailRow>
 
-                              <div>
-                                <FormControl fullWidth>
-                                  <Field as={TextField} name="COMPANY_EMAIL" label="Shop email" type="text" variant="outlined" size="small" error={touched.COMPANY_EMAIL && !!errors.COMPANY_EMAIL} />
-                                  <ErrorMessage name="COMPANY_EMAIL" component={ValidationError} />
-                                </FormControl>
-                              </div>
+                    <DetailRow>
+                      <DetailLabel xs={5}>Shop mobile number</DetailLabel>
+                      <DetailValue xs={7}>{this.state.data.COMPANY_MOBILE ? this.state.data.COMPANY_MOBILE : '-'}</DetailValue>
+                    </DetailRow>
+                    <DetailRow>
+                      <DetailLabel xs={5}>Shop email</DetailLabel>
+                      <DetailValue xs={7}>{this.state.data.COMPANY_WEBSITE ? <a href={"mailto:" + this.state.data.COMPANY_EMAIL}>{this.state.data.COMPANY_EMAIL}</a> : '-'}</DetailValue>
+                    </DetailRow>
+                    <DetailRow>
+                      <DetailLabel xs={5}>Shop website</DetailLabel>
+                      <DetailValue xs={7}>{this.state.data.COMPANY_WEBSITE ? <a href={this.state.data.COMPANY_WEBSITE} target="_blank" rel="noopener noreferrer">{this.state.data.COMPANY_WEBSITE}</a> : '-'}</DetailValue>
+                    </DetailRow>
+                    <DetailRow>
+                      <DetailLabel xs={5}>Shop address</DetailLabel>
+                      <DetailValue xs={7}><span style={{ whiteSpace: 'pre-line' }}>{this.state.data.COMPANY_ADDRESS ? this.state.data.COMPANY_ADDRESS : '-'}</span></DetailValue>
+                    </DetailRow>
 
-                              <div>
-                                <FormControl fullWidth>
-                                  <Field as={TextField} name="COMPANY_GSTIN" label="Shop GSTIN number" type="text" variant="outlined" size="small" error={touched.COMPANY_GSTIN && !!errors.COMPANY_GSTIN} />
-                                  <ErrorMessage name="COMPANY_GSTIN" component={ValidationError} />
-                                </FormControl>
-                              </div>
-                            </Grid>
-                            <Grid item xs={6}>
+                    <FormActions>
+                      <IsGranted permissions={['update_company_settings']}>
+                        <Button onClick={this.openForm} type="button" variant="contained" color="primary" size="small">Edit</Button>
+                      </IsGranted>
+                    </FormActions>
+                  </FormContent>
 
-                              <div>
-                                <FormControl fullWidth>
-                                  <Field as={TextField} name="COMPANY_WEBSITE" label="Shop website" type="text" variant="outlined" size="small" error={touched.COMPANY_WEBSITE && !!errors.COMPANY_WEBSITE} />
-                                  <ErrorMessage name="COMPANY_WEBSITE" component={ValidationError} />
-                                </FormControl>
-                              </div>
-
-                              <div>
-                                <FormControl fullWidth>
-                                  <Field as={TextField} name="COMPANY_ADDRESS" label="Shop address" type="text" multiline={true} rows="3" variant="outlined" size="small" error={touched.COMPANY_ADDRESS && !!errors.COMPANY_ADDRESS} />
-                                  <ErrorMessage name="COMPANY_ADDRESS" component={ValidationError} />
-                                </FormControl>
-                              </div>
-
-                            </Grid>
-                          </Grid>
-
-                          {this.state.saveError && <div><ValidationError>{this.state.saveError}</ValidationError></div>}
-
-                          <FormActions>
-
-                            <Button onClick={() => this.viewSettings()} type="button" disabled={isSubmitting} variant="contained" color="default" size="small">Cancel</Button>
-
-                            <Button type="submit" disabled={!isValid || isSubmitting} variant="contained" color="primary" size="small">Save</Button>
-                          </FormActions>
-
-                        </FormContent>
-                      </Form>
-                    }
-                  </Formik>
                 </CardContent>
-              </Card>
-            </Grid>}
+              </Grid>}
 
-        </Grid>
+            {(this.state.mode === 'EDIT') &&
+
+              <Grid item xs={10}>
+                <Card elevation={0}>
+                  <CardContent>
+                    <Formik initialValues={{ ...this.state.data }}
+                      validationSchema={this.validationSchema}
+                      validateOnMount={true}
+                      enableReinitialize={true}
+                      onSubmit={(values, { setSubmitting }) => {
+                        this.save(values).then(val => { }).catch(err => setSubmitting(false));
+                      }}>
+                      {({
+                        handleSubmit,
+                        touched,
+                        errors,
+                        isValid,
+                        isSubmitting
+                      }) => <Form noValidate autoComplete="off" onSubmit={handleSubmit}>
+                          <SectionTitle gutterBottom variant="h5">Update settings</SectionTitle>
+                          <FormContent>
+                            <Grid container spacing={2}>
+                              <Grid item xs={6}>
+                                <div>
+                                  <FormControl fullWidth>
+                                    <Field as={TextField} name="COMPANY_NAME" label="Shop name" type="text" required variant="outlined" size="small" error={touched.COMPANY_NAME && !!errors.COMPANY_NAME} />
+                                    <ErrorMessage name="COMPANY_NAME" component={ValidationError} />
+                                  </FormControl>
+                                </div>
+
+                                <div>
+                                  <FormControl fullWidth>
+                                    <Field as={TextField} name="COMPANY_MOBILE" label="Shop mobile number" type="text" required variant="outlined" size="small" error={touched.COMPANY_MOBILE && !!errors.COMPANY_MOBILE} />
+                                    <ErrorMessage name="COMPANY_MOBILE" component={ValidationError} />
+                                  </FormControl>
+                                </div>
+
+                                <div>
+                                  <FormControl fullWidth>
+                                    <Field as={TextField} name="COMPANY_EMAIL" label="Shop email" type="text" variant="outlined" size="small" error={touched.COMPANY_EMAIL && !!errors.COMPANY_EMAIL} />
+                                    <ErrorMessage name="COMPANY_EMAIL" component={ValidationError} />
+                                  </FormControl>
+                                </div>
+
+                                <div>
+                                  <FormControl fullWidth>
+                                    <Field as={TextField} name="COMPANY_GSTIN" label="Shop GSTIN number" type="text" variant="outlined" size="small" error={touched.COMPANY_GSTIN && !!errors.COMPANY_GSTIN} />
+                                    <ErrorMessage name="COMPANY_GSTIN" component={ValidationError} />
+                                  </FormControl>
+                                </div>
+                              </Grid>
+                              <Grid item xs={6}>
+
+                                <div>
+                                  <FormControl fullWidth>
+                                    <Field as={TextField} name="COMPANY_WEBSITE" label="Shop website" type="text" variant="outlined" size="small" error={touched.COMPANY_WEBSITE && !!errors.COMPANY_WEBSITE} />
+                                    <ErrorMessage name="COMPANY_WEBSITE" component={ValidationError} />
+                                  </FormControl>
+                                </div>
+
+                                <div>
+                                  <FormControl fullWidth>
+                                    <Field as={TextField} name="COMPANY_ADDRESS" label="Shop address" type="text" multiline={true} minRows="3" variant="outlined" size="small" error={touched.COMPANY_ADDRESS && !!errors.COMPANY_ADDRESS} />
+                                    <ErrorMessage name="COMPANY_ADDRESS" component={ValidationError} />
+                                  </FormControl>
+                                </div>
+
+                              </Grid>
+                            </Grid>
+
+                            {this.state.saveError && <div><ValidationError>{this.state.saveError}</ValidationError></div>}
+
+                            <FormActions>
+
+                              <Button onClick={() => this.viewSettings()} type="button" disabled={isSubmitting} variant="contained" color="default" size="small">Cancel</Button>
+
+                              <Button type="submit" disabled={!isValid || isSubmitting} variant="contained" color="primary" size="small">Save</Button>
+                            </FormActions>
+
+                          </FormContent>
+                        </Form>
+                      }
+                    </Formik>
+                  </CardContent>
+                </Card>
+              </Grid>}
+
+          </Grid>
+        </Box>
+
+        {/* Company branches */}
+        <Branches />
       </>);
   }
 }

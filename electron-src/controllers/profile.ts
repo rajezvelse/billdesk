@@ -11,23 +11,23 @@ ipcMain.on('changePassword', (event: IpcMainEvent, { username, currentPassword, 
 
       let userRepository = connection.getRepository(User);
 
-        let user = await userRepository.findOne({ username: username });
+      let user = await userRepository.findOne({ where: { username: username } });
 
-        if (!user) {
-            Settings.sendWebContent('changePasswordResponse', 400, 'Invalid user');
-            return;
-        }
+      if (!user) {
+        Settings.sendWebContent('changePasswordResponse', 400, 'Invalid user');
+        return;
+      }
 
-        let passwordMatched = verify(currentPassword, user.password);
+      let passwordMatched = verify(currentPassword, user.password);
 
-        if (!passwordMatched) {
-            Settings.sendWebContent('changePasswordResponse', 400, 'Invalid current password');
-            return;
-        }
+      if (!passwordMatched) {
+        Settings.sendWebContent('changePasswordResponse', 400, 'Invalid current password');
+        return;
+      }
 
-        user.setRawPassword(newPassword);
+      user.setRawPassword(newPassword);
 
-        await userRepository.save(user);
+      await userRepository.save(user);
 
 
       Settings.sendWebContent('changePasswordResponse', 200, 'Password changed');

@@ -29,7 +29,7 @@ import {
   DatePicker,
 } from '@material-ui/pickers';
 
-import { withSnackbar, WithSnackbarProps } from 'notistack';
+
 
 import * as Yup from 'yup';
 import { Formik, Field, ErrorMessage, getIn, FieldArray } from 'formik';
@@ -37,6 +37,8 @@ import { Formik, Field, ErrorMessage, getIn, FieldArray } from 'formik';
 import { Currency, IsGranted } from '../../directives';
 
 import { uniqueId } from 'lodash';
+import withSnackbar from '../../directives/with-snackbar';
+import { WithSnackbarProps } from '../../types/snackbar.type';
 
 
 interface formValuesType {
@@ -82,8 +84,9 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
   deleting: boolean;
   deleteError: null | string;
 }> {
+  context: any;
 
-  validationSchema: Yup.ObjectSchema = Yup.object().shape({
+  validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
     date: Yup.date().required('Please enter the date').nullable(),
     customer: Yup.object().shape({
       customerId: Yup.number().positive().integer().nullable(),
@@ -93,38 +96,25 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
     particulars: Yup.array().of(
       Yup.object().shape({
         rowNumber: Yup.number(),
-        productId: Yup.number().when('rowNumber', {
-          is: (rowNumber: number) => rowNumber < this.state.particularsLastRowNum,
-          then: Yup.number().required().positive().integer().nullable(false),
-          otherwise: Yup.number().nullable()
-        }),
+        productId: Yup.number().when('rowNumber',
+          ([rowNumber], schema) => rowNumber < this.state.particularsLastRowNum ?
+            schema.required().positive().integer().nonNullable() : schema.nullable()
+        ),
         quantityAvailable: Yup.number(),
         quantityRemaining: Yup.number().moreThan(-1),
-        price: Yup.number().when('productId', {
-          is: (productId: any) => !!productId,
-          then: Yup.number().required(),
-          otherwise: Yup.number()
-        }),
-        quantity: Yup.number().when('productId', {
-          is: (productId: any) => !!productId,
-          then: Yup.number().required().moreThan(0),
-          otherwise: Yup.number()
-        }),
-        cost: Yup.number().when('productId', {
-          is: (productId: any) => !!productId,
-          then: Yup.number().required(),
-          otherwise: Yup.number()
-        }),
-        discount: Yup.number().when('productId', {
-          is: (productId: any) => !!productId,
-          then: Yup.number().required().min(0),
-          otherwise: Yup.number()
-        }),
-        discountedCost: Yup.number().when('productId', {
-          is: (productId: any) => !!productId,
-          then: Yup.number().required(),
-          otherwise: Yup.number()
-        })
+        price: Yup.number().when('productId',
+          ([productId], schema) => !!productId ? schema.required() : schema
+        ),
+        quantity: Yup.number().when('productId',
+          ([productId], schema) => !!productId ? schema.required().moreThan(0) : schema
+        ),
+        cost: Yup.number().when('productId',
+          ([productId], schema) => !!productId ? schema.required() : schema
+        ),
+        discount: Yup.number().when('productId',
+          ([productId], schema) => !!productId ? schema.required().min(0) : schema),
+        discountedCost: Yup.number().when('productId',
+          ([productId], schema) => !!productId ? schema.required() : schema)
       })
     ),
     payment: Yup.object().shape({
@@ -246,9 +236,9 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
             mode: response.payments[0].mode,
             amount: response.payments[0].amount
           } : {
-              mode: 'CASH',
-              amount: 0
-            }
+            mode: 'CASH',
+            amount: 0
+          }
         },
         customerDetailsActionField: 'name',
         particularsLastRowNum: response.particulars.length,
@@ -440,7 +430,7 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
   }
 
   // Debounce function from type listener
-  timerId: number | null = null;
+  timerId: any = null;
   debounce = (callback: Function) => {
 
     if (this.timerId) {
@@ -492,7 +482,7 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
 
                           <SectionTitle gutterBottom variant="h5">
                             New sale
-                          <Tooltip title="View drafts" arrow placement="top">
+                            <Tooltip title="View drafts" arrow placement="top">
                               <Button onClick={() => this.setState({ showDraftDrawer: true })} variant="contained" size="small" color="primary">
                                 <ViewListIcon />
                               </Button>
@@ -536,7 +526,7 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
                             <SubSection>
                               <SubSectionTitle gutterBottom variant="h6">Customer details:</SubSectionTitle>
 
-                              <Grid container justify="center">
+                              <Grid container justifyContent="center">
                                 <Grid item xs={12}>
                                   <Grid container spacing={3}>
                                     <Grid item xs={12} md={5}>
@@ -868,7 +858,7 @@ class NewSale extends ReactComponent<WithSnackbarProps & { saleId: number; }, {
                                     <NoBorderTd colSpan={4} rowSpan={2}></NoBorderTd>
                                     <td colSpan={2} rowSpan={2}>
                                       Payment
-                                </td>
+                                    </td>
                                     <td>
                                       <Field as={ParticularsTableSelect} name={`payment.mode`} placeholder="Payment mode" required variant="outlined" size="small">
                                         <MenuItem value={'CASH'}>Cash</MenuItem>

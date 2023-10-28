@@ -30,7 +30,8 @@ class NewSalesPaymentDialog extends ReactComponent<{ open: boolean; onClose: Fun
   },
   saveError: null | string;
 }> {
-  validationSchema: Yup.ObjectSchema = Yup.object().shape({
+  context: any;
+  validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
     saleId: Yup.number().required(),
     date: Yup.date().required('Please enter payment date').nullable(),
     mode: Yup.string().required('Please select a payment mode'),

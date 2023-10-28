@@ -45,9 +45,36 @@ export const Autocomplete: any = styled(AC)`
       border-color:  ${props => props.theme.palette.error.main};
     }
 
-    
-
   }
+`;
+
+export const BranchSelectionDropdown: any = styled(Select)`
+    display: inline-block;
+    margin-left: 5px;
+    color:  #fff;
+    top: 5px;
+
+    &:after, &:before{
+      display: none
+    }
+
+  .MuiSelect-icon {
+    color:  #fff;
+  }
+
+  .MuiSelect-select {
+    padding-top: 0;
+    padding-bottom: 0;
+    font-weight: bold;
+  }
+
+  .MuiOutlinedInput-root {
+    border:  none;
+  } 
+
+  
+
+
 `;
 
 export const Button = styled(BT)`

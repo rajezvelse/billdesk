@@ -9,9 +9,9 @@ ipcMain.on('fetchCustomers', (event: IpcMainEvent, { searchText }) => {
   Settings.getConnection().then(async connection => {
     let customerRepository = connection.getRepository(Customer);
 
-    
+
     let query = customerRepository.createQueryBuilder('c')
-    .select(['c.id, c.name, c.phone']);
+      .select(['c.id, c.name, c.phone']);
 
     if (searchText) {
       query.where(`c.name LIKE '%${searchText}%'`);
@@ -55,7 +55,7 @@ ipcMain.on('updateCustomer', (event: IpcMainEvent, { id, name, phone }) => {
 
     let customerRepository = connection.getRepository(Customer);
 
-    let customer = await customerRepository.findOne({ id: id });
+    let customer = await customerRepository.findOne({ where: { id: id } });
 
     if (!customer) {
       Settings.sendWebContent('updateCustomerResponse', 400, 'Customer not found');
@@ -80,7 +80,7 @@ ipcMain.on('deleteCustomer', (event: IpcMainEvent, { id }) => {
 
     let customerRepository = connection.getRepository(Customer);
 
-    let customer = await customerRepository.findOne({ id: id });
+    let customer = await customerRepository.findOne({ where: { id: id } });
 
     if (!customer) {
       Settings.sendWebContent('deleteCustomerResponse', 400, 'Customer not found');

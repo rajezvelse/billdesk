@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { GridCenter } from './grids';
 import { Paper, Grid, CircularProgress, Typography } from '@material-ui/core';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import ObjectType from '../types/object.type';
 
 // Info box
 const InfoPaper = styled(Paper)`
@@ -10,7 +11,7 @@ padding: ${props => props.theme.spacing(3)}px;
 text-align: center;
 `;
 
-export const InfoBox: React.FC = (props) => <GridCenter>
+export const InfoBox: React.FC<ObjectType> = (props) => <GridCenter>
   <Grid item xs={10} sm={7} md={3} lg={3}>
     <InfoPaper elevation={2}>
       {props.children}
@@ -26,7 +27,7 @@ margin-bottom: ${props => props.theme.spacing(2)}px;
 
 const LoaderText = styled(Typography)``;
 
-export const InfoLoading: React.FC = (props) => <InfoBox>
+export const InfoLoading: React.FC<ObjectType> = (props) => <InfoBox>
   <LoaderAnimation />
 
   <LoaderText>{props.children}</LoaderText>
@@ -44,7 +45,7 @@ const Text = styled(Typography)`
 color: ${props => props.theme.palette.error.main};
 `;
 
-export const InfoError: React.FC = (props) => <InfoBox>
+export const InfoError: React.FC<ObjectType> = (props) => <InfoBox>
   <Icon />
 
   <Text>{props.children}</Text>

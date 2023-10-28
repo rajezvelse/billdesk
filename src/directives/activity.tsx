@@ -6,6 +6,8 @@ import RootContext from '../root.context';
 import { InfoError } from '../styled-components';
 
 class Activity extends ReactComponent<ActivityProps, any> {
+  context: any;
+  
   getFeature = (name: string) => {
     return (features as ObjectType)[name];
   }
@@ -16,6 +18,7 @@ class Activity extends ReactComponent<ActivityProps, any> {
 
   render() {
     let Feature = this.getFeature(this.props.name);
+    console.log('redirect', this.props)
 
     return <>
       {

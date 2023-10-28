@@ -18,8 +18,8 @@ export const load = async (connection: Connection) => {
   // Insert admin role if not exists
   let roleRepository = connection.getRepository(Role);
 
-  let adminRole = await roleRepository.find({ name: 'Admin' });
-  let shopKeeperRole = await roleRepository.find({ name: 'Shopkeeper' });
+  let adminRole = await roleRepository.find({ where: { name: 'Admin' } });
+  let shopKeeperRole = await roleRepository.find({ where: { name: 'Shopkeeper' } });
 
   if (adminRole.length == 0) {
 

@@ -18,10 +18,11 @@ import {
 import AddIcon from '@material-ui/icons/Add';
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 
-import { withSnackbar } from 'notistack'
+
 
 import * as Yup from 'yup';
 import { Formik, Field, ErrorMessage } from 'formik';
+import withSnackbar from '../../directives/with-snackbar';
 
 class Customers extends ReactComponent<any, {
   mode: 'ADD' | 'EDIT' | 'VIEW';
@@ -36,7 +37,8 @@ class Customers extends ReactComponent<any, {
   }
   showDeleteWarning: boolean;
 }> {
-  validationSchema: Yup.ObjectSchema = Yup.object().shape({
+  context: any;
+  validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
     name: Yup.string().required('Please enter customer name'),
     phone: Yup.string().matches(/^(?:(?:\+|0{0,2})91(\s*[\ -]\s*)?|[0]?)?[789]\d{9}|(\d[ -]?){10}\d$/, 'Enter valid phone number')
   });
@@ -221,7 +223,7 @@ class Customers extends ReactComponent<any, {
 
   }
 
-  timerId: number | null = null;
+  timerId:  any = null;
   debounce = (callback: Function) => {
 
     if (this.timerId) {

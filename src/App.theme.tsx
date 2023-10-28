@@ -1,8 +1,7 @@
 
-import { createMuiTheme, responsiveFontSizes } from '@material-ui/core/styles';
-import { ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
+import { createTheme, responsiveFontSizes, ThemeOptions } from '@material-ui/core/styles';
 
-let AppTheme = createMuiTheme({
+let AppTheme = createTheme({
   viewport: {
     screenHeight: window.screen.height,
     screenWidth: window.screen.width,

@@ -45,11 +45,11 @@ ipcMain.on('updateBrand', (event: IpcMainEvent, { id, name }) => {
 
     let brandRepository = connection.getRepository(Brand);
 
-    let brand = await brandRepository.findOne({ id: id });
+    let brand = await brandRepository.findOne({ where: { id: id } });
 
     if (!brand) {
-        Settings.sendWebContent('updateBrandResponse', 400, 'Brand not found');
-        return;
+      Settings.sendWebContent('updateBrandResponse', 400, 'Brand not found');
+      return;
     }
 
     brand.name = name;
@@ -69,11 +69,11 @@ ipcMain.on('deleteBrand', (event: IpcMainEvent, { id }) => {
 
     let brandRepository = connection.getRepository(Brand);
 
-    let brand = await brandRepository.findOne({ id: id });
+    let brand = await brandRepository.findOne({ where: { id: id } });
 
     if (!brand) {
-        Settings.sendWebContent('deleteBrandResponse', 400, 'Brand not found');
-        return;
+      Settings.sendWebContent('deleteBrandResponse', 400, 'Brand not found');
+      return;
     }
 
     await brandRepository.softDelete({ id: id });

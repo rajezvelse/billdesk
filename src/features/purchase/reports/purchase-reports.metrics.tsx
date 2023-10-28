@@ -42,6 +42,7 @@ class PurchaseReportsMetrics extends ReactComponent<{
   productSearchIsOpen: boolean;
   filterDataFetchError: any;
 }> {
+  context: any;
 
   constructor(props: any) {
     super(props);
@@ -163,7 +164,7 @@ class PurchaseReportsMetrics extends ReactComponent<{
     });
   }
 
-  timerId: number | null = null;
+  timerId:  any = null;
   debounce = (callback: Function, waitTime?: number) => {
 
     if (this.timerId) {
@@ -187,7 +188,7 @@ class PurchaseReportsMetrics extends ReactComponent<{
       {this.state.netSummary &&
 
         <ReportChartCard>
-          <Grid container justify="center" spacing={8}>
+          <Grid container justifyContent="center" spacing={8}>
             <Grid item xs={12} md={3}>
               <ReportCardInfoBlue>
                 <CardContent>
@@ -337,7 +338,7 @@ class PurchaseReportsMetrics extends ReactComponent<{
           </Grid>
         </Grid>
 
-        <Grid container justify="center" spacing={6}>
+        <Grid container justifyContent="center" spacing={6}>
           {/* Brand wise purchase */}
           {this.state.brandWiseSummary && <Grid item xs={12} md={5}>
             <ReportChartTitle>Vechicle Model Trend</ReportChartTitle>

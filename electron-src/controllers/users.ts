@@ -9,7 +9,7 @@ ipcMain.on('fetchUsersFormData', (params?: any) => {
   Settings.getConnection().then(async connection => {
     let roleRepository = connection.getRepository(Role);
 
-    const roles = await roleRepository.find({ order: { name: 'ASC' }});
+    const roles = await roleRepository.find({ order: { name: 'ASC' } });
 
     Settings.sendWebContent('fetchUsersFormDataResponse', 200, roles);
 
@@ -22,7 +22,7 @@ ipcMain.on('fetchUsers', (params?: any) => {
   Settings.getConnection().then(async connection => {
     let userRepository = connection.getRepository(User);
 
-    const users = await userRepository.find({ order: { firstName: 'ASC' }, relations: ['role']});
+    const users = await userRepository.find({ order: { firstName: 'ASC' }, relations: ['role'] });
 
     Settings.sendWebContent('fetchUsersResponse', 200, users);
 
@@ -36,7 +36,7 @@ ipcMain.on('addNewUser', (event: IpcMainEvent, { username, password, role, first
 
     let userRepository = connection.getRepository(User);
 
-    let matches = await userRepository.find({ where: { username: username}, withDeleted: true });
+    let matches = await userRepository.find({ where: { username: username }, withDeleted: true });
 
     if (matches.length > 0) {
       Settings.sendWebContent('addNewUserResponse', 400, 'Username already exists');
@@ -53,9 +53,14 @@ ipcMain.on('addNewUser', (event: IpcMainEvent, { username, password, role, first
     user.phone = phone;
 
     let roleRepository = connection.getRepository(Role);
-    let roleObj = await roleRepository.findOne({ id: role});
+    let roleObj = await roleRepository.findOne({ where: { id: role } });
 
-    switch(roleObj.name) {
+    if (!roleObj) {
+      Settings.sendWebContent('addNewUserResponse', 500, "Role not found");
+      return
+    }
+
+    switch (roleObj.name) {
       case "Admin": {
         user.avatar = 1;
         break;
@@ -83,7 +88,7 @@ ipcMain.on('updateUser', (event: IpcMainEvent, { id, username, role, firstName, 
 
     let userRepository = connection.getRepository(User);
 
-    let user = await userRepository.findOne({ id: id });
+    let user = await userRepository.findOne({ where: { id: id } });
 
     if (!user) {
       Settings.sendWebContent('updateUserResponse', 400, 'User not found');
@@ -99,9 +104,14 @@ ipcMain.on('updateUser', (event: IpcMainEvent, { id, username, role, firstName, 
     user.deleted = deleted;
 
     let roleRepository = connection.getRepository(Role);
-    let roleObj = await roleRepository.findOne({ id: role});
+    let roleObj = await roleRepository.findOne({ where: { id: role } });
 
-    switch(roleObj.name) {
+    if (!roleObj) {
+      Settings.sendWebContent('addNewUserResponse', 500, "Role not found");
+      return
+    }
+
+    switch (roleObj.name) {
       case "Admin": {
         user.avatar = 1;
         break;
@@ -128,7 +138,7 @@ ipcMain.on('changeUserPassword', (event: IpcMainEvent, { id, newPassword }) => {
 
     let userRepository = connection.getRepository(User);
 
-    let user = await userRepository.findOne({ id: id });
+    let user = await userRepository.findOne({ where: { id: id } });
 
     if (!user) {
       Settings.sendWebContent('changeUserPasswordResponse', 400, 'User not found');
@@ -152,7 +162,7 @@ ipcMain.on('deleteUser', (event: IpcMainEvent, { id }) => {
 
     let userRepository = connection.getRepository(User);
 
-    let user = await userRepository.findOne({ id: id });
+    let user = await userRepository.findOne({ where: { id: id } });
 
     if (!user) {
       Settings.sendWebContent('deleteUserResponse', 400, 'User not found');

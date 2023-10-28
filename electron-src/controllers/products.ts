@@ -10,8 +10,8 @@ ipcMain.on('fetchProducts', (event: IpcMainEvent, { pageLimit, pageNumber, order
     try {
       if (!pageLimit) pageLimit = 20;
       if (!pageNumber) pageNumber = 1;
-      if(!orderBy) orderBy = 'name';
-      if(!order) order = 'asc';
+      if (!orderBy) orderBy = 'name';
+      if (!order) order = 'asc';
 
       let productRepository = connection.getRepository(Product);
 
@@ -183,8 +183,8 @@ ipcMain.on('getProductFormData', (params?: any) => {
       let pcRepo = connection.getRepository(ProductCategory);
       let brandRepo = connection.getRepository(Brand);
 
-      let categories = await pcRepo.find({ select: ['id', 'category'], order: { category: 'ASC'}  });
-      let brands = await brandRepo.find({ select: ['id', 'name'], order: { name: 'ASC'}  });
+      let categories = await pcRepo.find({ select: ['id', 'category'], order: { category: 'ASC' } });
+      let brands = await brandRepo.find({ select: ['id', 'name'], order: { name: 'ASC' } });
 
       Settings.sendWebContent('getProductFormDataResponse', 200, { categories, brands });
 
@@ -231,7 +231,7 @@ ipcMain.on('updateProduct', (event: IpcMainEvent, { id, name, brand, category, p
     try {
       let productRepository = connection.getRepository(Product);
 
-      let product = await productRepository.findOne({ id: id });
+      let product = await productRepository.findOne({ where: { id: id } });
 
       if (!product) {
         Settings.sendWebContent('updateProductResponse', 400, 'Product not found');
@@ -261,14 +261,14 @@ ipcMain.on('deleteProduct', (event: IpcMainEvent, { id }) => {
     try {
       let productRepository = connection.getRepository(Product);
 
-      let product = await productRepository.findOne({ id: id });
+      let product = await productRepository.findOne({ where: { id: id } });
 
       if (!product) {
         Settings.sendWebContent('deleteProductResponse', 400, 'Product not found');
         return;
       }
 
-      await productRepository.softDelete({ id: id });
+      await productRepository.softDelete(id);
 
       Settings.sendWebContent('deleteProductResponse', 200, 'deleted')
 

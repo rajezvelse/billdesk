@@ -16,4 +16,5 @@ export { ExpenseCategory } from './expense-categories'
 export { Expense } from './expenses'
 export { ProductStocks } from './product-stocks'
 export { Scraps } from './scraps'
+export { Branch } from './branches'
  

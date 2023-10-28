@@ -10,10 +10,10 @@ display: inline-block;
 width: ${(props: any) => props.width}px;
 height: ${(props: any) => props.height}px;
 border-radius: 50%;
-background-size: ${(props: any) => props.bgSize}px;
+background-size: ${(props: any) => props.bgsize}px;
 background-position-x: ${(props: any) => props.x.toString()}px;
 background-position-y: ${(props: any) => props.y.toString()}px;
-border: ${(props: any) => props.borderColor ? ('2px solid ' + props.borderColor) : 'none'};
+border: ${(props: any) => props.bordercolor ? ('2px solid ' + props.bordercolor) : 'none'};
 `;
 
 
@@ -55,10 +55,10 @@ export const ProfileAvatar = (props: { variant: number; size?: 'small' | 'medium
   let avaProps = {
     x: metrics.left + -1 * (hMultiplier - 1) * metrics.xSpace,
     y: metrics.top + -1 * yMultiplier * metrics.ySpace,
-    borderColor: props.outline ? outlineColors[props.outline] : null,
+    bordercolor: props.outline ? outlineColors[props.outline] : null,
     width: metrics.width,
     height: metrics.height,
-    bgSize: metrics.bgSize
+    bgsize: metrics.bgSize
   };
 
   return <PFStyle {...avaProps} > </PFStyle>;

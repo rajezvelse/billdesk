@@ -19,11 +19,13 @@ import {
 import AddIcon from '@material-ui/icons/Add';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
-import { withSnackbar, WithSnackbarProps } from 'notistack';
+
 
 import { Currency, FormatDate, IsGranted } from '../../directives';
 
 import { uniqueId } from 'lodash';
+import withSnackbar from '../../directives/with-snackbar';
+import { WithSnackbarProps } from '../../types/snackbar.type';
 
 class PurchaseDetails extends ReactComponent<WithSnackbarProps & { id: number; }, {
   data: any;
@@ -37,6 +39,7 @@ class PurchaseDetails extends ReactComponent<WithSnackbarProps & { id: number; }
   showDeleteWarning: boolean;
   deleteError: any;
 }> {
+  context: any;
 
   constructor(props: any) {
     super(props);
@@ -205,7 +208,7 @@ class PurchaseDetails extends ReactComponent<WithSnackbarProps & { id: number; }
                       {/* Balance amount & Total paid */}
                       <Grid item xs={12} md={6}>
                         <GridFullHeight container direction="column"
-                          justify="center"
+                          justifyContent="center"
                           alignItems="center">
                           <Grid item xs={12} md={8}>
                             <DisplayCard>

@@ -2,6 +2,7 @@ import { ipcMain, BrowserWindow, IpcMainEvent } from 'electron';
 import { Settings } from '../settings';
 import { Preferences } from '../entity';
 import { print } from '../utils';
+import {  In } from 'typeorm';
 
 ipcMain.on('setPreferences', (event: IpcMainEvent, { preferencesData }) => {
 
@@ -10,7 +11,7 @@ ipcMain.on('setPreferences', (event: IpcMainEvent, { preferencesData }) => {
 
     let preferences = await repo.find({
       where: {
-        name: Object.keys(preferencesData)
+        name: In(Object.keys(preferencesData))
       }
     });
 

@@ -232,7 +232,7 @@ ipcMain.on('updateExpense', (event: IpcMainEvent, { id, date, description, categ
     try {
       let expenseRepository = connection.getRepository(Expense);
 
-      let expense = await expenseRepository.findOne({ id: id });
+      let expense = await expenseRepository.findOne({ where: { id: id } });
 
       if (!expense) {
         Settings.sendWebContent('updateExpenseResponse', 400, 'Expense not found');
@@ -262,7 +262,7 @@ ipcMain.on('deleteExpense', (event: IpcMainEvent, { id }) => {
     try {
       let expenseRepository = connection.getRepository(Expense);
 
-      let expense = await expenseRepository.findOne({ id: id });
+      let expense = await expenseRepository.findOne({ where: { id: id } });
 
       if (!expense) {
         Settings.sendWebContent('deleteExpenseResponse', 400, 'Expense not found');

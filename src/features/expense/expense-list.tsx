@@ -17,13 +17,14 @@ import {
   ButtonGroup
 } from '@material-ui/core';
 
-import { withSnackbar } from 'notistack'
+
 
 import { DateRangePicker } from "materialui-daterange-picker";
 import moment from 'moment';
 
 import AddIcon from '@material-ui/icons/Add';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import withSnackbar from '../../directives/with-snackbar';
 
 class ExpensesList extends ReactComponent<any, {
   data: any[];
@@ -53,6 +54,7 @@ class ExpensesList extends ReactComponent<any, {
   selectedDateOption: 'today' | 'yesterday' | 'this_week' | 'this_month' | 'custom_range';
   filterData: any;
 }> {
+  context: any;
   constructor(props: any) {
     super(props);
 
@@ -197,7 +199,7 @@ class ExpensesList extends ReactComponent<any, {
     });
   }
 
-  timerId: number | null = null;
+  timerId:  any = null;
   debounce = (callback: Function) => {
 
     if (this.timerId) {
@@ -321,7 +323,7 @@ class ExpensesList extends ReactComponent<any, {
                             </Grid>
                             <Grid item xs={12} md={6}>
                               <GridFullHeight container 
-                                justify="center"
+                                justifyContent="center"
                                 alignItems="center">
                                 <Grid item xs={12} md={6}>
                                   <ReportCardPink>
@@ -413,10 +415,10 @@ class ExpensesList extends ReactComponent<any, {
                               rowsPerPage={this.state.rowsPerPage}
                               rowsPerPageOptions={[]}
                               page={this.state.currentPage - 1}
-                              onChangePage={(event: unknown, newPage: number) => {
+                              onPageChange={(event: unknown, newPage: number) => {
                                 this.fetchData(newPage + 1);
                               }}
-                              onChangeRowsPerPage={() => { }}
+                              onRowsPerPageChange={() => { }}
                             />
                           }
                         </CardContent>

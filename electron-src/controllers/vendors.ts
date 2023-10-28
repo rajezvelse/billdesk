@@ -49,11 +49,11 @@ ipcMain.on('updateVendor', (event: IpcMainEvent, { id, name, mobile, email, gsti
 
     let vendorRepository = connection.getRepository(Vendor);
 
-    let vendor = await vendorRepository.findOne({ id: id });
+    let vendor = await vendorRepository.findOne({ where: { id: id } });
 
     if (!vendor) {
-        Settings.sendWebContent('updateVendorResponse', 400, 'Vendor not found');
-        return;
+      Settings.sendWebContent('updateVendorResponse', 400, 'Vendor not found');
+      return;
     }
 
     vendor.name = name;
@@ -77,11 +77,11 @@ ipcMain.on('deleteVendor', (event: IpcMainEvent, { id }) => {
 
     let vendorRepository = connection.getRepository(Vendor);
 
-    let vendor = await vendorRepository.findOne({ id: id });
+    let vendor = await vendorRepository.findOne({ where: { id: id } });
 
     if (!vendor) {
-        Settings.sendWebContent('deleteVendorResponse', 400, 'Vendor not found');
-        return;
+      Settings.sendWebContent('deleteVendorResponse', 400, 'Vendor not found');
+      return;
     }
 
     await vendorRepository.softDelete({ id: id });

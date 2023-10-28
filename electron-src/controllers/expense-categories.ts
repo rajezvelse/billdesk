@@ -45,11 +45,11 @@ ipcMain.on('updateExpenseCategory', (event: IpcMainEvent, { id, category }) => {
 
     let expenseCategoryRepository = connection.getRepository(ExpenseCategory);
 
-    let expenseCategory = await expenseCategoryRepository.findOne({ id: id });
+    let expenseCategory = await expenseCategoryRepository.findOne({ where: { id: id } });
 
     if (!expenseCategory) {
-        Settings.sendWebContent('updateExpenseCategoryResponse', 400, 'Expense category not found');
-        return;
+      Settings.sendWebContent('updateExpenseCategoryResponse', 400, 'Expense category not found');
+      return;
     }
 
     expenseCategory.category = category;
@@ -69,14 +69,14 @@ ipcMain.on('deleteExpenseCategory', (event: IpcMainEvent, { id }) => {
 
     let expenseCategoryRepository = connection.getRepository(ExpenseCategory);
 
-    let expenseCategory = await expenseCategoryRepository.findOne({ id: id });
+    let expenseCategory = await expenseCategoryRepository.findOne({ where: { id: id } });
 
     if (!expenseCategory) {
-        Settings.sendWebContent('deleteExpenseCategoryResponse', 400, 'Expense category not found');
-        return;
+      Settings.sendWebContent('deleteExpenseCategoryResponse', 400, 'Expense category not found');
+      return;
     }
 
-    await expenseCategoryRepository.softDelete({ id: id });
+    await expenseCategoryRepository.softDelete(id);
 
     Settings.sendWebContent('deleteExpenseCategoryResponse', 200, 'deleted')
 

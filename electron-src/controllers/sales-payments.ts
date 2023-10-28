@@ -5,12 +5,12 @@ import { Like, Brackets } from 'typeorm';
 import { print, generateRecordNumber } from '../utils';
 
 // List all payment of a particular sale
-ipcMain.on('fetchSalePayments', (event: IpcMainEvent, { saleId}) => {
+ipcMain.on('fetchSalePayments', (event: IpcMainEvent, { saleId }) => {
 
   Settings.getConnection().then(async connection => {
     try {
       let paymentRepo = connection.getRepository(SalesPayment);
-      let records = await paymentRepo.find({ where: { salesRecord: saleId }, order: { date: 'ASC'}});
+      let records = await paymentRepo.find({ where: { salesRecord: saleId }, order: { date: 'ASC' } });
 
       Settings.sendWebContent('fetchSalePaymentsResponse', 200, records);
     } catch (err) {
@@ -36,7 +36,7 @@ ipcMain.on('addNewSalePayment', (event: IpcMainEvent, { saleId, date, mode, amou
 
       await paymentRepo.save(record);
 
-      let payments = await paymentRepo.find({ where: { salesRecord: saleId }});
+      let payments = await paymentRepo.find({ where: { salesRecord: saleId } });
 
       let total: number = 0;
 
@@ -46,6 +46,12 @@ ipcMain.on('addNewSalePayment', (event: IpcMainEvent, { saleId, date, mode, amou
 
       let saleRepo = connection.getRepository(Sales);
       let saleRecord = await saleRepo.findOne(saleId);
+
+      if (!saleRecord) {
+        Settings.sendWebContent('addNewSalePaymentResponse', 404, "Sale record not found");
+        return;
+      }
+
       saleRecord.paymentReceived = total;
       saleRecord.outstandingAmount = saleRecord.totalDiscountedCost - total;
 
@@ -66,15 +72,18 @@ ipcMain.on('deleteSalePayment', (event: IpcMainEvent, { id }) => {
   Settings.getConnection().then(async connection => {
     try {
       let paymentRepo = connection.getRepository(SalesPayment);
-      let record = await paymentRepo.findOne(id, { relations: ['salesRecord']});
+      let record = await paymentRepo.findOne({ where: { id }, relations: ['salesRecord'] });
 
-      if(!record)  Settings.sendWebContent('deleteSalePaymentResponse', 404, 'Sales payment record not found');
+      if (!record) {
+        Settings.sendWebContent('deleteSalePaymentResponse', 404, 'Sales payment record not found');
+        return
+      }
 
       let saleId = record.salesRecord.id;
 
       await paymentRepo.delete(id);
 
-      let payments = await paymentRepo.find({ where: { salesRecord: saleId }});
+      let payments = await paymentRepo.find({ where: { salesRecord: record.salesRecord } });
 
       let total: number = 0;
 
@@ -83,7 +92,10 @@ ipcMain.on('deleteSalePayment', (event: IpcMainEvent, { id }) => {
       })
 
       let saleRepo = connection.getRepository(Sales);
-      let saleRecord = await saleRepo.findOne(saleId);
+      let saleRecord = await saleRepo.findOne({ where: { id: saleId } });
+      if (!saleRecord) {
+        throw new Error("Couldn't find the sale record to update total")
+      }
       saleRecord.paymentReceived = total;
       saleRecord.outstandingAmount = saleRecord.totalDiscountedCost - total;
 

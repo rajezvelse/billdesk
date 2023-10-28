@@ -45,11 +45,11 @@ ipcMain.on('updateProductCategory', (event: IpcMainEvent, { id, category }) => {
 
     let productCategoryRepository = connection.getRepository(ProductCategory);
 
-    let productCategory = await productCategoryRepository.findOne({ id: id });
+    let productCategory = await productCategoryRepository.findOne({ where: { id: id } });
 
     if (!productCategory) {
-        Settings.sendWebContent('updateProductCategoryResponse', 400, 'Product category not found');
-        return;
+      Settings.sendWebContent('updateProductCategoryResponse', 400, 'Product category not found');
+      return;
     }
 
     productCategory.category = category;
@@ -69,14 +69,14 @@ ipcMain.on('deleteProductCategory', (event: IpcMainEvent, { id }) => {
 
     let productCategoryRepository = connection.getRepository(ProductCategory);
 
-    let productCategory = await productCategoryRepository.findOne({ id: id });
+    let productCategory = await productCategoryRepository.findOne({ where: { id: id } });
 
     if (!productCategory) {
-        Settings.sendWebContent('deleteProductCategoryResponse', 400, 'Product category not found');
-        return;
+      Settings.sendWebContent('deleteProductCategoryResponse', 400, 'Product category not found');
+      return;
     }
 
-    await productCategoryRepository.softDelete({ id: id });
+    await productCategoryRepository.softDelete(id);
 
     Settings.sendWebContent('deleteProductCategoryResponse', 200, 'deleted')
 

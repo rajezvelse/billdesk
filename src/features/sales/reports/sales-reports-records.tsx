@@ -18,8 +18,10 @@ import {
 } from '@material-ui/core';
 
 import { Currency, FormatDate } from '../../../directives';
+import withSnackbar from '../../../directives/with-snackbar';
+import { WithSnackbarProps } from '../../../types/snackbar.type';
 
-import { withSnackbar, WithSnackbarProps } from 'notistack';
+
 
 class SalesReportsRecords extends ReactComponent<WithSnackbarProps & {
   reportState: any;
@@ -41,6 +43,7 @@ class SalesReportsRecords extends ReactComponent<WithSnackbarProps & {
   showDeleteWarning: boolean;
   deleteError: any;
 }> {
+  context: any;
 
   constructor(props: any) {
     super(props);
@@ -146,7 +149,7 @@ class SalesReportsRecords extends ReactComponent<WithSnackbarProps & {
     this.context.electronIpc.send('deleteSale', { id })
   }
 
-  timerId: number | null = null;
+  timerId:  any = null;
   debounce = (callback: Function) => {
 
     if (this.timerId) {
@@ -165,6 +168,7 @@ class SalesReportsRecords extends ReactComponent<WithSnackbarProps & {
   }
 
   render() {
+    return <></>
     return (<>
       <RootContext.Consumer>
         {({ navigate }) => (
@@ -287,10 +291,10 @@ class SalesReportsRecords extends ReactComponent<WithSnackbarProps & {
                             rowsPerPage={this.state.pageLimit}
                             rowsPerPageOptions={[]}
                             page={this.state.currentPage - 1}
-                            onChangePage={(event: unknown, newPage: number) => {
+                            onPageChange={(event: unknown, newPage: number) => {
                               this.fetchData(newPage + 1);
                             }}
-                            onChangeRowsPerPage={() => { }}
+                            onRowsPerPageChange={() => { }}
                           />
                         }
                       </CardContent>

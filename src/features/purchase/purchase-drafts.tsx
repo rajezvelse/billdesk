@@ -13,6 +13,7 @@ class PurchaseDrafts extends ReactComponent<any, {
   drafts: any[];
   loadError: null | string;
 }> {
+  context: any;
   constructor(props: any) {
     super(props);
 

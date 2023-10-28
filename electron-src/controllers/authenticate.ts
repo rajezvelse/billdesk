@@ -9,7 +9,7 @@ ipcMain.on('authenticate', (event: IpcMainEvent, { username, password }) => {
 
     let userRepository = connection.getRepository(User);
 
-    let user = await userRepository.findOne({ username: username }, { relations: ['role']});
+    let user = await userRepository.findOne({ where: { username: username }, relations: ['role'] });
 
     if (!user) {
       Settings.sendWebContent('authenticateResponse', 400, 'Invalid username');
@@ -28,7 +28,7 @@ ipcMain.on('authenticate', (event: IpcMainEvent, { username, password }) => {
     // Save favorite user preference
     let preferencesRepo = connection.getRepository(Preferences);
 
-    let favUserPreference = await preferencesRepo.findOne({ name: "FAV_USER" });
+    let favUserPreference = await preferencesRepo.findOne({ where: { name: "FAV_USER" } });
     if (!favUserPreference) {
       favUserPreference = new Preferences();
       favUserPreference.name = "FAV_USER";

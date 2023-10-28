@@ -5,27 +5,27 @@ import { print } from '../utils';
 
 ipcMain.on('getPreferences', (event: IpcMainEvent) => {
 
-    Settings.getConnection().then(async connection => {
-      
-        const repo = connection.getRepository(Preferences);
+  Settings.getConnection().then(async connection => {
 
-        let preferences = await repo.find();
+    const repo = connection.getRepository(Preferences);
 
-        let formatted: { [k: string]: any } = {};
+    let preferences = await repo.find();
 
-        preferences.forEach(record => {
-            formatted[record.name] = record.value;
-        })
+    let formatted: { [k: string]: any } = {};
 
-        // Additional details
-        if (formatted['FAV_USER']) {
-            let userRepo = connection.getRepository(User);
-            let user = await userRepo.findOne({ id: parseInt(formatted['FAV_USER']) });
-            formatted['FAV_USER'] = user;
-        }
+    preferences.forEach(record => {
+      formatted[record.name] = record.value;
+    })
 
-        Settings.sendWebContent('getPreferencesResponse', 200, formatted)
+    // Additional details
+    if (formatted['FAV_USER']) {
+      let userRepo = connection.getRepository(User);
+      let user = await userRepo.findOne({ where: { id: parseInt(formatted['FAV_USER']) } });
+      formatted['FAV_USER'] = user;
+    }
 
-    }).catch(Err => console.log(Err))
+    Settings.sendWebContent('getPreferencesResponse', 200, formatted)
+
+  }).catch(Err => console.log(Err))
 
 });

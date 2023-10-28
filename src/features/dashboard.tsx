@@ -20,6 +20,7 @@ import moment from 'moment';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 
 class Dashboard extends ReactComponent<any, {
+  forceReload: number | null;
   summary: any;
   filters: {
     date: {
@@ -32,11 +33,13 @@ class Dashboard extends ReactComponent<any, {
   selectedDateOption: 'today' | 'yesterday' | 'this_week' | 'this_month' | 'custom_range';
   fetchError: any;
 }> {
+  context: any;
 
   constructor(props: any) {
     super(props)
 
     this.state = {
+      forceReload: null,
       fetchError: null,
       summary: null,
       filters: {
@@ -47,12 +50,22 @@ class Dashboard extends ReactComponent<any, {
         }
       },
       showDateDropdown: false,
-      selectedDateOption: 'this_month',
+      selectedDateOption: 'this_month'
     }
   }
 
   componentDidMount() {
     this.fetchData();
+  }
+
+  componentDidUpdate(prevProps: any) {
+
+    if (this.props.forceReload && this.state.forceReload != this.props.forceReload) {
+
+      this.setState({ forceReload: this.props.forceReload }, () => {
+        this.fetchData()
+      })
+    }
   }
 
   fetchData = () => {
@@ -77,6 +90,7 @@ class Dashboard extends ReactComponent<any, {
       startDate: this.state.filters.date.startDate,
       endDate: this.state.filters.date.endDate
     });
+
   }
 
 
@@ -145,7 +159,7 @@ class Dashboard extends ReactComponent<any, {
                         <ArrowDropDownIcon />
                       </Button>
                     </ReportChartTitleSpaced>
-                    <Grid container justify="center" spacing={8}>
+                    <Grid container justifyContent="center" spacing={8}>
 
                       <IsGranted permissions={['view_sales']}>
                         <Grid item xs={12} md={3}>
@@ -160,7 +174,7 @@ class Dashboard extends ReactComponent<any, {
                                 }}
                               >
                                 View detailed sales report
-                          </ViewMoreButton>
+                              </ViewMoreButton>
                             </CardContent>
                           </ReportCardInfoBlue>
                         </Grid>
@@ -178,7 +192,7 @@ class Dashboard extends ReactComponent<any, {
                                 }}
                               >
                                 View detailed purchase report
-                          </ViewMoreButton>
+                              </ViewMoreButton>
                             </CardContent>
                           </ReportCardBlue>
                         </Grid>
@@ -197,7 +211,7 @@ class Dashboard extends ReactComponent<any, {
                                 }}
                               >
                                 View productwise profit/loss
-                          </ViewMoreButton>
+                              </ViewMoreButton>
                             </CardContent>
                           </ReportCardGreen>
                         </Grid>
@@ -215,7 +229,7 @@ class Dashboard extends ReactComponent<any, {
                                 }}
                               >
                                 View all scrap records
-                          </ViewMoreButton>
+                              </ViewMoreButton>
                             </CardContent>
                           </ReportCardPink>
                         </Grid>
@@ -233,7 +247,7 @@ class Dashboard extends ReactComponent<any, {
                         <ArrowDropDownIcon />
                       </Button>
                     </ReportChartTitleSpaced>
-                    <Grid container justify="center" spacing={8}>
+                    <Grid container justifyContent="center" spacing={8}>
 
                       <IsGranted permissions={['view_sales']}>
                         <Grid item xs={12} md={3}>
@@ -247,7 +261,7 @@ class Dashboard extends ReactComponent<any, {
                                 }}
                               >
                                 View detailed sales report
-                          </ViewMoreButton>
+                              </ViewMoreButton>
                             </CardContent>
                           </ReportCardInfoBlue>
                         </Grid>
@@ -265,7 +279,7 @@ class Dashboard extends ReactComponent<any, {
                                 }}
                               >
                                 View detailed purchase report
-                          </ViewMoreButton>
+                              </ViewMoreButton>
                             </CardContent>
                           </ReportCardBlue>
                         </Grid>
@@ -283,7 +297,7 @@ class Dashboard extends ReactComponent<any, {
                                 }}
                               >
                                 View detailed expense report
-                          </ViewMoreButton>
+                              </ViewMoreButton>
                             </CardContent>
                           </ReportCardPink>
                         </Grid>

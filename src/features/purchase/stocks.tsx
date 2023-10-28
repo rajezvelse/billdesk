@@ -12,8 +12,9 @@ import {
   Grid, Card, CardContent, TableContainer, Table, TableBody,
   TableRow, TableCell, TextField, TablePagination, TableSortLabel
 } from '@material-ui/core';
+import withSnackbar from '../../directives/with-snackbar';
 
-import { withSnackbar } from 'notistack'
+
 
 class StocksList extends ReactComponent<any, {
   data: any[];
@@ -31,6 +32,7 @@ class StocksList extends ReactComponent<any, {
   },
   filterData: any;
 }> {
+  context: any;
   constructor(props: any) {
     super(props);
 
@@ -99,7 +101,7 @@ class StocksList extends ReactComponent<any, {
     });
   }
 
-  timerId: number | null = null;
+  timerId:  any = null;
   debounce = (callback: Function) => {
 
     if (this.timerId) {
@@ -233,10 +235,10 @@ class StocksList extends ReactComponent<any, {
                               rowsPerPage={this.state.rowsPerPage}
                               rowsPerPageOptions={[]}
                               page={this.state.currentPage - 1}
-                              onChangePage={(event: unknown, newPage: number) => {
+                              onPageChange={(event: unknown, newPage: number) => {
                                 this.fetchData(newPage + 1);
                               }}
-                              onChangeRowsPerPage={() => { }}
+                              onRowsPerPageChange={() => { }}
                             />
                           }
                         </CardContent>

@@ -166,7 +166,7 @@ ipcMain.on('addNewScraps', (event: IpcMainEvent, { date, productId, quantity }) 
 
       let stockRecordsToBeUpdated: ProductStocks[] = [];
 
-      let purchaseCostPortions = [];
+      let purchaseCostPortions: Array<{}> = [];
 
       let matches = await stocksRepo.find({ where: { product: productId, quantityAvailable: MoreThan(0) }, order: { product: 'ASC', quantityAvailable: 'ASC' }, relations: ['product'] });
       let soldQty: number = quantity;
@@ -244,7 +244,7 @@ ipcMain.on('deleteScraps', (event: IpcMainEvent, { id }) => {
       portions.forEach((por: any) => {
         recordsNormalized.push({
           purchasePrice: por['p'],
-          productId: scraps.product.id,
+          productId: scraps?.product.id,
           quantity: por['q']
         })
       });

@@ -24,28 +24,24 @@ import { Formik, Field, ErrorMessage } from 'formik';
 import withSnackbar from '../directives/with-snackbar';
 
 
-class Vendors extends ReactComponent<any, {
+class Branches extends ReactComponent<any, {
   mode: 'ADD' | 'EDIT' | 'VIEW';
   saveError: null | string;
   listError: null | string;
-  vendors: any[];
-  selectedVendor: any;
+  branches: any[];
+  selectedBranch: any;
   formValues: {
     name: string;
-    mobile: string;
-    email: string;
+    phone: string;
     address: string;
-    gstin: string;
   }
   showDeleteWarning: boolean;
 }> {
   context: any;
   validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
-    name: Yup.string().required('Please enter vendor name'),
-    mobile: Yup.string().required('Please enter vendor mobile number'),
-    email: Yup.string().email('Enter valid email address'),
-    address: Yup.string(),
-    gstin: Yup.string()
+    name: Yup.string().required('Please enter branch name'),
+    phone: Yup.string(),
+    address: Yup.string()
   });
 
   constructor(props: any) {
@@ -55,14 +51,12 @@ class Vendors extends ReactComponent<any, {
       mode: 'ADD',
       saveError: null,
       listError: null,
-      vendors: [],
-      selectedVendor: null,
+      branches: [],
+      selectedBranch: null,
       formValues: {
         name: '',
-        mobile: '',
-        email: '',
+        phone: '',
         address: '',
-        gstin: ''
       },
       showDeleteWarning: false
     }
@@ -72,13 +66,13 @@ class Vendors extends ReactComponent<any, {
   componentDidMount() {
     super.componentDidMount();
 
-    // Load vendors list  
-    if (this.context.electronIpc) this.fetchVendors();
+    // Load branches list  
+    if (this.context.electronIpc) this.fetchBranches();
 
   }
 
-  fetchVendors = () => {
-    this.context.electronIpc.once("fetchVendorsResponse", (event: IpcRendererEvent, status: number, response: any) => {
+  fetchBranches = () => {
+    this.context.electronIpc.once("fetchBranchesResponse", (event: IpcRendererEvent, status: number, response: any) => {
       this.context.setLoading(false);
 
       // On fail
@@ -87,34 +81,32 @@ class Vendors extends ReactComponent<any, {
         return;
       }
 
-      this.setState({ vendors: response, listError: null });
+      this.setState({ branches: response, listError: null });
     });
 
     this.context.setLoading(true);
-    this.context.electronIpc.send("fetchVendors");
+    this.context.electronIpc.send("fetchBranches");
   }
 
   openAddForm = (event: any, refreshList?: boolean) => {
     this.setState({
       mode: 'ADD',
       saveError: null,
-      selectedVendor: null,
+      selectedBranch: null,
       formValues: {
         name: '',
-        mobile: '',
-        email: '',
+        phone: '',
         address: '',
-        gstin: ''
       }
     }, () => {
-      if (refreshList) this.fetchVendors();
+      if (refreshList) this.fetchBranches();
     })
   }
 
-  viewVendor = (item: any) => {
+  viewBranch = (item: any) => {
     this.setState({
       mode: 'VIEW',
-      selectedVendor: item
+      selectedBranch: item
     })
   }
 
@@ -124,11 +116,9 @@ class Vendors extends ReactComponent<any, {
       mode: 'EDIT',
       saveError: null,
       formValues: {
-        name: this.state.selectedVendor.name,
-        mobile: this.state.selectedVendor.mobile,
-        email: this.state.selectedVendor.email,
-        address: this.state.selectedVendor.address,
-        gstin: this.state.selectedVendor.gstin
+        name: this.state.selectedBranch.name,
+        phone: this.state.selectedBranch.phone || '',
+        address: this.state.selectedBranch.address || ''
       }
     });
   }
@@ -138,7 +128,7 @@ class Vendors extends ReactComponent<any, {
 
       if (this.state.mode === 'ADD') {
 
-        this.context.electronIpc.once('addNewVendorResponse', (event: IpcRendererEvent, status: number, response: any) => {
+        this.context.electronIpc.once('addNewBranchResponse', (event: IpcRendererEvent, status: number, response: any) => {
           this.context.setLoading(false);
 
           // On fail
@@ -148,9 +138,7 @@ class Vendors extends ReactComponent<any, {
             this.setState({
               saveError: response, formValues: {
                 name: values.name,
-                mobile: values.mobile,
-                email: values.email,
-                gstin: values.gstin,
+                phone: values.phone,
                 address: values.address
               }
             });
@@ -162,27 +150,25 @@ class Vendors extends ReactComponent<any, {
           this.setState({
             saveError: null,
             mode: 'VIEW',
-            selectedVendor: response
+            selectedBranch: response
           }, () => {
-            this.fetchVendors();
+            this.fetchBranches();
           })
 
         });
 
         // Send signal
         this.context.setLoading(true);
-        this.context.electronIpc.send('addNewVendor', {
+        this.context.electronIpc.send('addNewBranch', {
           name: values.name,
-          mobile: values.mobile,
-          email: values.email,
-          gstin: values.gstin,
+          phone: values.phone,
           address: values.address
         })
 
       }
 
       if (this.state.mode === 'EDIT') {
-        this.context.electronIpc.once('updateVendorResponse', (event: IpcRendererEvent, status: number, response: any) => {
+        this.context.electronIpc.once('updateBranchResponse', (event: IpcRendererEvent, status: number, response: any) => {
           this.context.setLoading(false);
 
           // On fail
@@ -192,10 +178,8 @@ class Vendors extends ReactComponent<any, {
             this.setState({
               saveError: response, formValues: {
                 name: values.name,
-                mobile: values.mobile,
-                email: values.email,
-                gstin: values.gstin,
-                address: values.address
+                phone: values.phone || '',
+                address: values.address || ''
               }
             });
             return;
@@ -206,21 +190,19 @@ class Vendors extends ReactComponent<any, {
           this.setState({
             saveError: null,
             mode: 'VIEW',
-            selectedVendor: response
+            selectedBranch: response
           }, () => {
-            this.fetchVendors();
+            this.fetchBranches();
           })
 
         });
 
         // Send signal
         this.context.setLoading(true);
-        this.context.electronIpc.send('updateVendor', {
-          id: this.state.selectedVendor.id,
+        this.context.electronIpc.send('updateBranch', {
+          id: this.state.selectedBranch.id,
           name: values.name,
-          mobile: values.mobile,
-          email: values.email,
-          gstin: values.gstin,
+          phone: values.phone,
           address: values.address
         })
 
@@ -228,8 +210,8 @@ class Vendors extends ReactComponent<any, {
     })
   }
 
-  deleteVendor = () => {
-    this.context.electronIpc.once('deleteVendorResponse', (event: IpcRendererEvent, status: number, response: any) => {
+  deleteBranch = () => {
+    this.context.electronIpc.once('deleteBranchResponse', (event: IpcRendererEvent, status: number, response: any) => {
       this.context.setLoading(false);
 
       // On fail
@@ -246,7 +228,7 @@ class Vendors extends ReactComponent<any, {
 
     // Send signal
     this.context.setLoading(true);
-    this.context.electronIpc.send('deleteVendor', { id: this.state.selectedVendor.id })
+    this.context.electronIpc.send('deleteBranch', { id: this.state.selectedBranch.id })
 
   }
 
@@ -258,9 +240,9 @@ class Vendors extends ReactComponent<any, {
             <Card>
               <CardContent>
                 <CardSectionTitle gutterBottom variant="h5">
-                  Vendors list
-                  <IsGranted permissions={['create_vendors']}>
-                    <Tooltip title="Add new Vendor" arrow placement="top">
+                  Branches list
+                  <IsGranted permissions={['create_branches']}>
+                    <Tooltip title="Add new Branch" arrow placement="top">
                       <Button onClick={this.openAddForm} variant="contained" size="small" color="primary">
                         <AddIcon />
                       </Button>
@@ -269,9 +251,9 @@ class Vendors extends ReactComponent<any, {
                 </CardSectionTitle>
                 <ScrollWrapper >
                   <ItemsList>
-                    {this.state.vendors.map((item) => <ListItem key={uniqueId()} onClick={() => this.viewVendor(item)} className={this.state.selectedVendor && item.id === this.state.selectedVendor.id ? 'selected' : ''}>
+                    {this.state.branches.map((item) => <ListItem key={uniqueId()} onClick={() => this.viewBranch(item)} className={this.state.selectedBranch && item.id === this.state.selectedBranch.id ? 'selected' : ''}>
                       <ListItemText>{item.name}</ListItemText>
-                      {this.state.selectedVendor && item.id === this.state.selectedVendor.id && <DoubleArrowIcon color="primary" style={{ fontSize: "2rem" }} />}
+                      {this.state.selectedBranch && item.id === this.state.selectedBranch.id && <DoubleArrowIcon color="primary" style={{ fontSize: "2rem" }} />}
                     </ListItem>)}
                   </ItemsList>
                 </ScrollWrapper>
@@ -282,37 +264,29 @@ class Vendors extends ReactComponent<any, {
           {/* View/Add/Edit section */}
           <Grid item xs={5}>
             {this.state.mode === 'VIEW' && <CardContent>
-              <SectionTitle gutterBottom variant="h5">Vendor details</SectionTitle>
+              <SectionTitle gutterBottom variant="h5">Branch details</SectionTitle>
 
               <FormContent>
                 <DetailRow>
                   <DetailLabel xs={5}>Name</DetailLabel>
-                  <DetailValue xs={7}>{this.state.selectedVendor.name}</DetailValue>
+                  <DetailValue xs={7}>{this.state.selectedBranch.name}</DetailValue>
                 </DetailRow>
                 <DetailRow>
                   <DetailLabel xs={5}>Mobile</DetailLabel>
-                  <DetailValue xs={7}>{this.state.selectedVendor.mobile}</DetailValue>
-                </DetailRow>
-                <DetailRow>
-                  <DetailLabel xs={5}>Email</DetailLabel>
-                  <DetailValue xs={7}>{this.state.selectedVendor.email ? this.state.selectedVendor.email : '-'}</DetailValue>
-                </DetailRow>
-                <DetailRow>
-                  <DetailLabel xs={5}>GSTIN Number</DetailLabel>
-                  <DetailValue xs={7}>{this.state.selectedVendor.gstin ? this.state.selectedVendor.gstin : '-'}</DetailValue>
+                  <DetailValue xs={7}>{this.state.selectedBranch.phone}</DetailValue>
                 </DetailRow>
                 <DetailRow>
                   <DetailLabel xs={5}>Address</DetailLabel>
-                  <DetailValue xs={7}><span style={{ whiteSpace: 'pre-line' }}>{this.state.selectedVendor.address ? this.state.selectedVendor.address : '-'}</span></DetailValue>
+                  <DetailValue xs={7}><span style={{ whiteSpace: 'pre-line' }}>{this.state.selectedBranch.address ? this.state.selectedBranch.address : '-'}</span></DetailValue>
                 </DetailRow>
 
                 <FormActions>
 
-                  <IsGranted permissions={['update_vendors']}>
+                  <IsGranted permissions={['update_branches']}>
                     <Button onClick={this.selectForEdit} type="button" variant="contained" color="primary" size="small">Edit</Button>
                   </IsGranted>
 
-                  <IsGranted permissions={['delete_vendors']}>
+                  <IsGranted permissions={['delete_branches']}>
                     <Button onClick={() => this.setState({ showDeleteWarning: true, saveError: null })} type="button" variant="contained" color="secondary" size="small">Delete</Button>
                   </IsGranted>
                 </FormActions>
@@ -320,7 +294,7 @@ class Vendors extends ReactComponent<any, {
 
             </CardContent>}
 
-            <IsGranted permissions={['create_vendors', 'update_vendors']}>
+            <IsGranted permissions={['create_branches', 'update_branches']}>
               {(this.state.mode === 'ADD' || this.state.mode === 'EDIT') && <Card elevation={0}>
                 <CardContent>
                   <Formik initialValues={{ ...this.state.formValues }}
@@ -337,35 +311,23 @@ class Vendors extends ReactComponent<any, {
                       isValid,
                       isSubmitting
                     }) => <Form noValidate autoComplete="off" onSubmit={handleSubmit}>
-                        <SectionTitle gutterBottom variant="h5">{this.state.mode === 'EDIT' ? 'Update Vendor details' : 'Add new Vendor'}</SectionTitle>
+                        <SectionTitle gutterBottom variant="h5">{this.state.mode === 'EDIT' ? 'Update Branch details' : 'Add new Branch'}</SectionTitle>
                         <FormContent>
                           <div>
                             <FormControl fullWidth>
-                              <Field as={TextField} name="name" label="Vendor name" type="text" required variant="outlined" size="small" error={touched.name && !!errors.name} />
+                              <Field as={TextField} name="name" label="Branch name" type="text" required variant="outlined" size="small" error={touched.name && !!errors.name} />
                               <ErrorMessage name="name" component={ValidationError} />
                             </FormControl>
                           </div>
                           <div>
                             <FormControl fullWidth>
-                              <Field as={TextField} name="mobile" label="Vendor mobile number" required type="text" variant="outlined" size="small" error={touched.mobile && !!errors.mobile} />
-                              <ErrorMessage name="mobile" component={ValidationError} />
+                              <Field as={TextField} name="phone" label="Branch phone number" type="text" variant="outlined" size="small" error={touched.phone && !!errors.phone} />
+                              <ErrorMessage name="phone" component={ValidationError} />
                             </FormControl>
                           </div>
                           <div>
                             <FormControl fullWidth>
-                              <Field as={TextField} name="email" label="Vendor email" type="text" variant="outlined" size="small" error={touched.email && !!errors.email} />
-                              <ErrorMessage name="email" component={ValidationError} />
-                            </FormControl>
-                          </div>
-                          <div>
-                            <FormControl fullWidth>
-                              <Field as={TextField} name="gstin" label="Vendor GSTIN number" type="text" variant="outlined" size="small" error={touched.gstin && !!errors.gstin} />
-                              <ErrorMessage name="gstin" component={ValidationError} />
-                            </FormControl>
-                          </div>
-                          <div>
-                            <FormControl fullWidth>
-                              <Field as={TextField} name="address" label="Vendor address" type="text" multiline={true} minRows="6" variant="outlined" size="small" error={touched.address && !!errors.address} />
+                              <Field as={TextField} name="address" label="Branch address" type="text" multiline={true} minRows="6" variant="outlined" size="small" error={touched.address && !!errors.address} />
                               <ErrorMessage name="address" component={ValidationError} />
                             </FormControl>
                           </div>
@@ -374,7 +336,7 @@ class Vendors extends ReactComponent<any, {
 
                           <FormActions>
 
-                            {this.state.mode === 'EDIT' && <Button onClick={() => this.viewVendor(this.state.selectedVendor)} type="button" disabled={isSubmitting} variant="contained" color="default" size="small">Cancel</Button>}
+                            {this.state.mode === 'EDIT' && <Button onClick={() => this.viewBranch(this.state.selectedBranch)} type="button" disabled={isSubmitting} variant="contained" color="default" size="small">Cancel</Button>}
 
                             <Button type="submit" disabled={!isValid || isSubmitting} variant="contained" color="primary" size="small">Save</Button>
                           </FormActions>
@@ -398,7 +360,7 @@ class Vendors extends ReactComponent<any, {
             <p>Are you sure to delete?</p>
             <WarningModalActions>
 
-              <Button onClick={this.deleteVendor} type="button" variant="contained" color="secondary" size="small">Yes</Button>
+              <Button onClick={this.deleteBranch} type="button" variant="contained" color="secondary" size="small">Yes</Button>
               <Button onClick={() => this.setState({ showDeleteWarning: false })} type="button" variant="contained" color="default" size="small">No</Button>
 
             </WarningModalActions>
@@ -410,6 +372,6 @@ class Vendors extends ReactComponent<any, {
   }
 }
 
-Vendors.contextType = RootContext;
+Branches.contextType = RootContext;
 
-export default withSnackbar(Vendors);
+export default withSnackbar(Branches);

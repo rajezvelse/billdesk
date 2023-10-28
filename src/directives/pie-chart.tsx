@@ -2,7 +2,7 @@ import React from 'react';
 import ReactComponent from '../react-component'
 import RootContext from '../root.context'
 import uniqueId from 'lodash/uniqueId';
-import { PieChartProps, PieChart as Chart, Pie, Cell, Tooltip as ChartTooltip, Legend } from 'recharts'
+import { PieChart as Chart, Pie, Cell, Tooltip as ChartTooltip, Legend } from 'recharts'
 
 import {
   ReportChartContainer, ReportChartBigView
@@ -12,8 +12,14 @@ import { formatCurrency } from '../utils'
 import IconButton from '@material-ui/core/IconButton';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import { ObjectType } from '../types';
 
-class PieChart extends ReactComponent<PieChartProps, any> {
+export interface PieChartProps {
+  data: Array<ObjectType>;
+}
+
+class PieChart extends ReactComponent<{ data: Array<{}> }, any> {
+  context: any;
   COLORS = ['#71bfb7', '#4a99d3', '#3d66ae', '#59519f', '#633087', '#9c1e81', '#e12560', '#e7631c', '#ebbc01', '#b2da0e'];
   id: string = uniqueId();
 
@@ -96,8 +102,8 @@ class PieChart extends ReactComponent<PieChartProps, any> {
               </Pie>
 
               <ChartTooltip
-              cursor={{ fill: '#87d4ea' }}
-              formatter={(value: any) => formatCurrency(value)} />
+                cursor={{ fill: '#87d4ea' }}
+                formatter={(value: any) => formatCurrency(value)} />
 
             </Chart>
 

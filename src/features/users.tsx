@@ -17,10 +17,11 @@ import {
 import AddIcon from '@material-ui/icons/Add';
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 
-import { withSnackbar } from 'notistack'
+
 
 import * as Yup from 'yup';
 import { Formik, Field, ErrorMessage } from 'formik';
+import withSnackbar from '../directives/with-snackbar';
 
 
 class Users extends ReactComponent<any, {
@@ -43,7 +44,8 @@ class Users extends ReactComponent<any, {
   roles: any[];
   showDeleteWarning: boolean;
 }> {
-  validationSchema: Yup.ObjectSchema = Yup.object().shape({
+  context: any;
+  validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
     username: Yup.string().required('Please enter user name'),
     password: Yup.string().required('Please enter password').min(6, 'Password should have atleast 6 characters'),
     confirmPassword: Yup.string().required('Please re-enter the password')
@@ -58,7 +60,7 @@ class Users extends ReactComponent<any, {
     deleted: Yup.boolean(),
   });
 
-  editValidationSchema: Yup.ObjectSchema = Yup.object().shape({
+  editValidationSchema: Yup.ObjectSchema<any>= Yup.object().shape({
     username: Yup.string().required('Please enter user name'),
     email: Yup.string().email('Enter valid email address'),
     role: Yup.string().required('Please select user role'),
@@ -67,7 +69,7 @@ class Users extends ReactComponent<any, {
     phone: Yup.string().required('Please enter phone number')
   });
 
-  changePasswordValidationSchema: Yup.ObjectSchema = Yup.object().shape({
+  changePasswordValidationSchema: Yup.ObjectSchema<any>= Yup.object().shape({
     password: Yup.string().required('Please enter password'),
     confirmPassword: Yup.string().required('Please re-enter the password')
       .test('passwords-mismatch', 'Confirm password doesn\'t match with the password.', function (value: string) {

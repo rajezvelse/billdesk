@@ -16,8 +16,10 @@ import mainLogo from '../assets/images/logo-h.png';
 
 import SalesMenu from './sales/sales-menu';
 import PurchaseMenu from './purchase/purchase-menu';
+import BranchSelector from './branch-selector';
 
 class Main extends ReactComponent<any, any> {
+  context: any;
 
   constructor(props: any) {
     super(props);
@@ -54,7 +56,9 @@ class Main extends ReactComponent<any, any> {
 
                   <TopNavTools>
                     <li>
-                      <strong>{preferences && preferences.COMPANY_NAME}</strong>
+                      <strong style={{marginRight: '5px'}}>{preferences && preferences.COMPANY_NAME}</strong> 
+                      -
+                      <BranchSelector/>
                     </li>
                     <li>
                       <TooltipLight title="Lock" arrow placement="left">

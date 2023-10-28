@@ -12,10 +12,11 @@ import {
   Grid, Button, TextField, InputAdornment
 } from '@material-ui/core';
 
-import { withSnackbar } from 'notistack'
+
 
 import * as Yup from 'yup';
 import { Formik, Field, ErrorMessage } from 'formik';
+import withSnackbar from '../../directives/with-snackbar';
 
 class ProductAddEdit extends ReactComponent<any, {
   mode: 'ADD' | 'EDIT',
@@ -30,7 +31,8 @@ class ProductAddEdit extends ReactComponent<any, {
   saveError: null | string;
   selectedProduct: null | any;
 }> {
-  validationSchema: Yup.ObjectSchema = Yup.object().shape({
+  context: any;
+  validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
     name: Yup.string().required('Please enter product name'),
     brand: Yup.number().required('Please select a model'),
     category: Yup.number(),

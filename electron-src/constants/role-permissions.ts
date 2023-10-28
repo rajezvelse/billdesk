@@ -15,4 +15,5 @@ export const RolePermissions: { [groupName: string]: string[] } = {
     PurchasePayments: ['create_purchase_payments', 'update_purchase_payments', 'view_purchase_payments', 'delete_purchase_payments'],
     Stocks: ['create_stocks', 'update_stocks', 'view_stocks', 'delete_stocks'],
     Scraps: ['create_scraps', 'update_scraps', 'view_scraps', 'delete_scraps'],
+    Branches: ['create_branches', 'update_branches', 'view_branches', 'delete_branches'],
 }

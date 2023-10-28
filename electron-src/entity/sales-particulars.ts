@@ -33,7 +33,7 @@ export class SalesParticulars extends BaseEntity {
     nullable: true,
     type: 'text'
   })
-  purchaseCostPortions: string;
+  purchaseCostPortions: string | null;
 
   @Column()
   profit: number;

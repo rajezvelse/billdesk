@@ -179,17 +179,20 @@ ipcMain.on('saveNewPurchase', (event: IpcMainEvent, { id, status, date, vendor, 
       let paymentRepo = connection.getRepository(PurchasePayment);
 
 
-      let vendorRecord: Vendor;
+      let vendorRecord: Vendor | null = null;
 
       if (vendor['vendorId']) {
-        vendorRecord = await vendorRepository.findOne({ id: vendor.vendorId });
+        vendorRecord = await vendorRepository.findOne({ where: { id: vendor.vendorId } });
       }
 
-      if (!vendorRecord) Settings.sendWebContent('saveNewPurchaseResponse', 404, 'Vendor not found');
+      if (!vendorRecord) {
+        Settings.sendWebContent('saveNewPurchaseResponse', 404, 'Vendor not found');
+        return
+      }
 
 
       // Purchase record
-      let purchaseRecord: Purchase;
+      let purchaseRecord: Purchase | null = null;
 
       if (id) {
         purchaseRecord = await purchaseRepo.findOne(id);
@@ -236,22 +239,24 @@ ipcMain.on('saveNewPurchase', (event: IpcMainEvent, { id, status, date, vendor, 
       try {
         // Particulars entries
         if (particulars.length > 0) {
-          let existingParticularsRecords: Array<PurchaseParticulars> = await purchaseParticularsRepo.find({ purchaseRecord: purchaseRecord });
+          let existingParticularsRecords: Array<PurchaseParticulars> = await purchaseParticularsRepo.find({ where: { purchaseRecord: purchaseRecord } });
           let particularsRecords: Array<PurchaseParticulars> = [];
 
           let products = await productRepo.findByIds(particulars.map((p: any) => p.productId));
 
           particulars.forEach((p: any) => {
 
-            let pRec: PurchaseParticulars;
+            let pRec: PurchaseParticulars | null | undefined = null;
 
             if (existingParticularsRecords.length) {
               pRec = existingParticularsRecords.shift();
-            } else {
+            }
+
+            if (!pRec) {
               pRec = new PurchaseParticulars();
             }
 
-            pRec.purchaseRecord = purchaseRecord;
+            if (purchaseRecord) pRec.purchaseRecord = purchaseRecord;
             pRec.product = p.productId;
             pRec.price = p.price;
             pRec.quantity = p.quantity;
@@ -321,12 +326,13 @@ ipcMain.on('saveNewPurchase', (event: IpcMainEvent, { id, status, date, vendor, 
         try {
           // Payments entry
 
-          let existingPayments = await paymentRepo.find({ purchaseRecord: purchaseRecord });
+          let existingPayments = await paymentRepo.find({ where: { purchaseRecord: purchaseRecord } });
 
-          let paymentRecord: PurchasePayment;
+          let paymentRecord: PurchasePayment | undefined;
 
           if (existingPayments.length) paymentRecord = existingPayments.shift();
-          else paymentRecord = new PurchasePayment();
+
+          if (!paymentRecord) paymentRecord = new PurchasePayment();
 
           paymentRecord.purchaseRecord = purchaseRecord;
           paymentRecord.date = date;
@@ -373,7 +379,7 @@ ipcMain.on('fetchPurchaseData', (event: IpcMainEvent, { id }) => {
         particularsRepo = connection.getRepository(PurchaseParticulars),
         purchasePaymentsRepo = connection.getRepository(PurchasePayment);
 
-      let record = await purchaseRepo.findOne(id, { relations: ['vendor'] });
+      let record = await purchaseRepo.findOne({ where: { id: id }, relations: ['vendor'] });
 
       if (!record) {
         Settings.sendWebContent('fetchPurchaseDataResponse', 404, 'No Purchase record found');

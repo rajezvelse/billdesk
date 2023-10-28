@@ -22,7 +22,8 @@ class Login extends ReactComponent<any, {
     password: string;
   }
 }> {
-  validationSchema: Yup.ObjectSchema = Yup.object().shape({
+  context: any;
+  validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
     username: Yup.string().required('Please enter username'),
     password: Yup.string().required('Please enter password')
   });
@@ -89,7 +90,7 @@ class Login extends ReactComponent<any, {
       <GridCenter>
         <Grid item xs={10} sm={9} md={6} lg={6}>
           <CardLogin>
-            <Grid container direction="row" justify="center" alignItems="center" spacing={2}>
+            <Grid container direction="row" justifyContent="center" alignItems="center" spacing={2}>
               {/* Logo */}
               <Grid item xs={12} sm={5}>
                 <LoginLogo src={appLogo} />
@@ -118,7 +119,7 @@ class Login extends ReactComponent<any, {
 
                       {this.state.favUser &&
                         <FormControl fullWidth >
-                          <Grid container justify="center" alignItems="center" spacing={10}>
+                          <Grid container justifyContent="center" alignItems="center" spacing={10}>
                             <Grid item sm={3}><ProfileAvatar variant={this.state.favUser.avatar} /></Grid>
                             <Grid item sm={9}><Typography>{this.state.favUser.firstName}</Typography></Grid>
                           </Grid>

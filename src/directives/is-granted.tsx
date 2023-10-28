@@ -1,8 +1,11 @@
 import React from "react";
 import ReactComponent from '../react-component';
 import RootContext from '../root.context';
+import { ObjectType, RootContextType } from "../types";
 
-class IsGranted extends ReactComponent<{ permissions: string[]; anyOne?: boolean; }, any> {
+class IsGranted extends ReactComponent<{ permissions: string[]; anyOne?: boolean; } & ObjectType, any> {
+  context: any;
+
   render() {
     let userPermissions: string[] = !this.context.userInfo ? [] :
       !(this.context.userInfo.role instanceof Object && this.context.userInfo.role.permissions instanceof Array) ? [] :

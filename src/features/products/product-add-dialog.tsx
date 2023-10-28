@@ -11,10 +11,11 @@ import {
   Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@material-ui/core';
 
-import { withSnackbar, WithSnackbarProps } from 'notistack'
 
 import * as Yup from 'yup';
 import { Formik, Field, ErrorMessage } from 'formik';
+import { WithSnackbarProps } from '../../types/snackbar.type';
+import withSnackbar from '../../directives/with-snackbar';
 
 class ProductAddDialog extends ReactComponent<WithSnackbarProps & { open: boolean; onClose: Function, initialValue: string }, {
   brands: Array<any>;
@@ -27,7 +28,8 @@ class ProductAddDialog extends ReactComponent<WithSnackbarProps & { open: boolea
   },
   saveError: null | string;
 }> {
-  validationSchema: Yup.ObjectSchema = Yup.object().shape({
+  context: any;
+  validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
     name: Yup.string().required('Please enter product name'),
     brand: Yup.number().required('Please select a model'),
     category: Yup.number(),
